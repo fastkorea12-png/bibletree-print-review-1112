@@ -1,0 +1,594 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>바이블트리 11–12월 인쇄 검수</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=IBM+Plex+Sans+KR:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: 교정지 책상 — 위에 책 고르는 띠, 아래로 표지 · 내용 · 열람(펼침면 + 메모) · 검수 메모 */
+:root {
+  --bg: #f3f4f6;
+  --surface: #ffffff;
+  --sunk: #e8eaee;
+  --ink: #1b2233;
+  --muted: #5d6576;
+  --line: #d5d9e0;
+  --proof: #c8352c;      /* 교정 빨강: 수정 필요 */
+  --ok: #2c7d55;         /* 확인 완료 */
+  --note: #8a6a12;       /* 메모 */
+  --age: #e9533f;
+  --age-text: var(--age);
+  --display: "Black Han Sans", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+  --body: "IBM Plex Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  --shadow: 0 1px 2px rgb(20 26 40 / 0.06), 0 8px 24px rgb(20 26 40 / 0.08);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #12151c; --surface: #1b202b; --sunk: #232938; --ink: #e7e9ef; --muted: #a2a9b8; --line: #323a4c;
+    --proof: #ff7a6e; --ok: #5cc38e; --note: #e0bd57;
+    --age-text: color-mix(in oklab, var(--age) 55%, white);
+    --shadow: 0 1px 2px rgb(0 0 0 / 0.3), 0 8px 24px rgb(0 0 0 / 0.35);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #12151c; --surface: #1b202b; --sunk: #232938; --ink: #e7e9ef; --muted: #a2a9b8; --line: #323a4c;
+  --proof: #ff7a6e; --ok: #5cc38e; --note: #e0bd57;
+  --age-text: color-mix(in oklab, var(--age) 55%, white);
+  --shadow: 0 1px 2px rgb(0 0 0 / 0.3), 0 8px 24px rgb(0 0 0 / 0.35);
+  color-scheme: dark;
+}
+body[data-book="low"]   { --age: #e9533f; }
+body[data-book="high"]  { --age: #2a7fc9; }
+body[data-book="teen"]  { --age: #1e9a82; }
+body[data-book="young"] { --age: #2c4a7a; }
+
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font: 15px/1.65 var(--body); }
+.wrap { max-width: 1240px; margin: 0 auto; padding-inline: 20px; }
+h1, h2, h3 { text-wrap: balance; margin: 0; }
+h2 { font: 400 26px/1.2 var(--display); letter-spacing: 0.01em; }
+h3 { font-size: 15px; font-weight: 700; }
+p { margin: 0; }
+.num { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+button, select, textarea, input { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--age-text); outline-offset: 2px; }
+
+/* top bar */
+.bar { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20; background: color-mix(in oklab, var(--bg) 88%, transparent); backdrop-filter: blur(10px); border-bottom: 1px solid var(--line); }
+.bar .wrap { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 20px; padding-block: 10px; }
+.brand { display: flex; align-items: baseline; gap: 10px; margin-right: auto; }
+.brand b { font: 400 20px/1 var(--display); letter-spacing: 0.04em; }
+.brand b i { font-style: normal; color: #e98a2c; }
+.brand b i + i { color: #7fb6d9; }
+.brand span { color: var(--muted); font-size: 13px; }
+.books { display: flex; gap: 6px; flex-wrap: wrap; }
+.books button { display: inline-flex; align-items: center; gap: 7px; padding: 6px 12px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); cursor: pointer; font-weight: 500; font-size: 14px; }
+.books button i { width: 9px; height: 9px; border-radius: 50%; background: var(--c); }
+.books button[aria-pressed="true"] { border-color: var(--c); box-shadow: inset 0 0 0 1px var(--c); }
+.books button small { color: var(--muted); font-family: var(--mono); font-size: 11px; }
+.nav { display: flex; gap: 4px; flex-wrap: wrap; }
+.nav a { color: var(--muted); text-decoration: none; padding: 4px 10px; border-radius: 6px; font-size: 14px; }
+.nav a:hover { color: var(--ink); background: var(--sunk); }
+
+main { display: grid; gap: 56px; padding-block: 28px 80px; }
+section { display: grid; gap: 20px; scroll-margin-top: 110px; }
+.head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 16px; }
+.head .eyebrow { font-family: var(--mono); font-size: 12px; letter-spacing: 0.08em; color: var(--age-text); text-transform: uppercase; }
+.head p { color: var(--muted); }
+
+/* overview */
+.ov { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+.ov button { text-align: left; display: grid; gap: 8px; padding: 16px; border-radius: 12px; border: 1px solid var(--line); background: var(--surface); cursor: pointer; }
+.ov button[aria-pressed="true"] { border-color: var(--c); box-shadow: inset 0 0 0 1px var(--c); }
+.ov .t { display: flex; align-items: center; gap: 8px; font-weight: 700; }
+.ov .t i { width: 10px; height: 10px; border-radius: 3px; background: var(--c); }
+.ov dl { display: grid; grid-template-columns: auto 1fr; gap: 2px 10px; margin: 0; font-size: 13px; }
+.ov dt { color: var(--muted); }
+.ov dd { margin: 0; font-family: var(--mono); font-size: 12.5px; }
+.meter { height: 6px; border-radius: 3px; background: var(--sunk); overflow: hidden; display: flex; }
+.meter b { background: var(--ok); }
+.meter s { background: var(--proof); }
+.ov .m { font-size: 12.5px; color: var(--muted); }
+
+/* cover */
+.cover { display: grid; grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr); gap: 28px; align-items: start; }
+.cover figure { margin: 0; display: grid; gap: 8px; }
+.cover .img { position: relative; border-radius: 6px; overflow: hidden; box-shadow: var(--shadow); background: var(--sunk); }
+.cover .img img { display: block; width: 100%; height: auto; }
+.cover .img .spine { position: absolute; top: 0; bottom: 0; border-inline: 1px dashed rgb(255 255 255 / 0.7); pointer-events: none; }
+.cover figcaption { display: flex; justify-content: space-between; gap: 10px; font-size: 12.5px; color: var(--muted); }
+.notes-list { display: grid; gap: 18px; }
+.notes-list div { display: grid; gap: 4px; }
+.notes-list h3 { display: flex; align-items: center; gap: 8px; }
+.notes-list p { color: var(--ink); font-size: 14.5px; }
+.tag { font-size: 11.5px; font-weight: 700; padding: 1px 7px; border-radius: 4px; background: color-mix(in oklab, var(--note) 18%, transparent); color: var(--note); }
+.specs { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+.specs div { background: var(--surface); padding: 12px 14px; display: grid; gap: 2px; }
+.specs span { font-size: 12px; color: var(--muted); }
+.specs b { font-family: var(--mono); font-weight: 500; font-size: 14px; }
+
+/* contents */
+.pagebar { display: flex; height: 44px; border-radius: 8px; overflow: hidden; border: 1px solid var(--line); background: var(--surface); }
+.pagebar div { display: grid; place-items: center; font-size: 12.5px; font-weight: 500; min-width: 0; overflow: hidden; white-space: nowrap; }
+.pagebar .fm { background: var(--sunk); color: var(--muted); }
+.pagebar .days { flex: 1; background: repeating-linear-gradient(90deg, color-mix(in oklab, var(--age) 22%, var(--surface)) 0 calc(100% / 61 - 1px), var(--surface) calc(100% / 61 - 1px) calc(100% / 61)); color: var(--ink); }
+.pagebar-legend { display: flex; justify-content: space-between; font-family: var(--mono); font-size: 11.5px; color: var(--muted); margin-top: -12px; }
+.anatomy { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.anatomy article { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 18px 20px; display: grid; gap: 12px; align-content: start; }
+.anatomy h3 { display: flex; justify-content: space-between; align-items: baseline; }
+.anatomy h3 small { font-family: var(--mono); font-weight: 400; color: var(--muted); font-size: 12px; }
+.anatomy ol { margin: 0; padding: 0; list-style: none; display: grid; gap: 10px; counter-reset: a; }
+.anatomy li { display: grid; grid-template-columns: 22px 1fr; gap: 8px; font-size: 14px; }
+.anatomy li::before { counter-increment: a; content: counter(a); font-family: var(--mono); font-size: 12px; color: var(--age-text); padding-top: 2px; }
+.anatomy li b { display: block; }
+.anatomy li span { color: var(--muted); }
+.extras { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
+.extras div { border-left: 3px solid var(--age); padding: 2px 0 2px 12px; display: grid; gap: 2px; font-size: 14px; }
+.extras b { font-family: var(--mono); font-weight: 500; font-size: 12px; color: var(--muted); }
+
+/* viewer */
+.viewer { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 16px; align-items: start; }
+.stage { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; display: grid; }
+.stage-top { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; padding: 10px 12px; border-bottom: 1px solid var(--line); }
+.stage-top .meta { display: grid; min-width: 0; margin-right: auto; }
+.stage-top .meta b { font-size: 16px; }
+.stage-top .meta span { color: var(--muted); font-size: 13px; }
+.stage-top select { padding: 6px 8px; border-radius: 8px; border: 1px solid var(--line); background: var(--bg); max-width: 100%; }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 36px; padding: 0 12px; border-radius: 8px; border: 1px solid var(--line); background: var(--surface); cursor: pointer; font-weight: 500; font-size: 14px; }
+.btn:hover { background: var(--sunk); }
+.btn:disabled { opacity: 0.4; cursor: default; }
+.btn.primary { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.btn.primary:hover { background: color-mix(in oklab, var(--ink) 85%, var(--bg)); }
+.scroller { overflow: auto; background: var(--sunk); max-height: 78vh; position: relative; }
+.scroller img { display: block; width: 100%; height: auto; margin: 0 auto; background: #fff; cursor: zoom-in; }
+.scroller.zoom img { width: 200%; max-width: none; cursor: zoom-out; }
+.stage-foot { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 8px 12px; border-top: 1px solid var(--line); font-size: 12.5px; color: var(--muted); }
+.kbd { font-family: var(--mono); font-size: 11px; border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 4px; padding: 0 5px; }
+
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; display: grid; gap: 0; position: sticky; top: 120px; max-height: calc(100vh - 140px); overflow: hidden; grid-template-rows: auto minmax(0, 1fr) auto; }
+.panel header { padding: 12px 14px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.panel header span { font-family: var(--mono); font-size: 12px; color: var(--muted); }
+.thread { overflow: auto; padding: 10px 14px; display: grid; gap: 10px; align-content: start; min-height: 80px; }
+.empty { color: var(--muted); font-size: 13.5px; padding: 6px 0; }
+.note { display: grid; gap: 4px; padding: 10px 12px; border-radius: 8px; background: var(--bg); border-left: 3px solid var(--st); }
+.note .who { display: flex; justify-content: space-between; align-items: center; gap: 8px; font-size: 12px; color: var(--muted); }
+.note .who b { color: var(--st); font-weight: 700; }
+.note p { font-size: 14px; white-space: pre-wrap; overflow-wrap: anywhere; }
+.note button { border: 0; background: none; color: var(--muted); cursor: pointer; font-size: 12px; padding: 0; text-decoration: underline; }
+.st-ok { --st: var(--ok); } .st-fix { --st: var(--proof); } .st-memo { --st: var(--note); }
+form.add { border-top: 1px solid var(--line); padding: 12px 14px; display: grid; gap: 8px; }
+.seg { display: grid; grid-template-columns: repeat(3, 1fr); border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+.seg label { text-align: center; padding: 6px 4px; font-size: 13px; cursor: pointer; border-left: 1px solid var(--line); }
+.seg label:first-child { border-left: 0; }
+.seg input { position: absolute; opacity: 0; pointer-events: none; }
+.seg label:has(input:checked) { background: color-mix(in oklab, var(--st) 16%, var(--surface)); color: var(--st); font-weight: 700; }
+.seg label:has(input:focus-visible) { outline: 2px solid var(--age-text); outline-offset: -2px; }
+form.add textarea { resize: vertical; min-height: 64px; padding: 8px 10px; border-radius: 8px; border: 1px solid var(--line); background: var(--bg); }
+form.add .row { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.hint { font-size: 12px; color: var(--muted); }
+
+/* thumbnails */
+.thumbs { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 14px 10px; }
+.thumb { display: grid; gap: 4px; border: 0; padding: 0; background: none; cursor: pointer; text-align: left; position: relative; }
+.thumb .pic { aspect-ratio: var(--ar); border-radius: 4px; background-color: #fff; background-repeat: no-repeat; box-shadow: 0 0 0 1px var(--line); }
+.thumb[aria-current="true"] .pic { box-shadow: 0 0 0 2px var(--age-text); }
+.thumb .cap { display: flex; gap: 6px; align-items: baseline; font-size: 12px; min-width: 0; }
+.thumb .cap b { font-family: var(--mono); font-weight: 500; white-space: nowrap; }
+.thumb .cap span { color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.marks { position: absolute; top: 5px; right: 5px; display: flex; gap: 3px; }
+.marks i { font-style: normal; font-size: 11px; font-weight: 700; line-height: 1; padding: 3px 5px; border-radius: 999px; color: #fff; }
+.marks .f { background: #c8352c; } .marks .o { background: #2c7d55; } .marks .n { background: #8a6a12; }
+.filters { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.chip { padding: 5px 11px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); cursor: pointer; font-size: 13px; }
+.chip[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+
+/* all notes */
+.table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); }
+table { width: 100%; border-collapse: collapse; font-size: 14px; }
+th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font-size: 12px; color: var(--muted); font-weight: 500; white-space: nowrap; }
+tr:last-child td { border-bottom: 0; }
+td.go button { border: 0; background: none; color: var(--age-text); cursor: pointer; font-weight: 700; padding: 0; white-space: nowrap; font: inherit; font-weight: 700; }
+td .pill { display: inline-block; font-size: 12px; font-weight: 700; padding: 1px 8px; border-radius: 999px; color: var(--st); background: color-mix(in oklab, var(--st) 14%, transparent); white-space: nowrap; }
+td.txt { white-space: pre-wrap; overflow-wrap: anywhere; min-width: 220px; }
+.signin { padding: 14px 16px; border-radius: 10px; background: var(--sunk); color: var(--muted); font-size: 14px; }
+
+@media (max-width: 980px) {
+  .viewer { grid-template-columns: minmax(0, 1fr); }
+  .panel { position: static; max-height: none; }
+  .cover { grid-template-columns: minmax(0, 1fr); }
+  .ov { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 620px) {
+  .wrap { padding-inline: 16px; }
+  .anatomy { grid-template-columns: minmax(0, 1fr); }
+  .ov { grid-template-columns: minmax(0, 1fr); }
+  .brand span { display: none; }
+  .scroller { max-height: none; }
+  h2 { font-size: 22px; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .scroller img { transition: opacity .15s; }
+}
+</style>
+<style>body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+</head>
+<body>
+
+
+<div class="bar">
+  <div class="wrap">
+    <div class="brand"><b>BIBLE TREE 2026 <i>11</i><i>12</i></b><span>인쇄 검수</span></div>
+    <div class="books" id="books" role="group" aria-label="책 고르기"></div>
+    <nav class="nav" aria-label="섹션">
+      <a href="#cover">표지</a><a href="#contents">내용</a><a href="#read">열람</a><a href="#review">검수 메모</a>
+    </nav>
+  </div>
+</div>
+
+<main class="wrap">
+  <section id="overview" aria-labelledby="ov-h">
+    <div class="head"><span class="eyebrow">네 권 한눈에</span><h2 id="ov-h">인쇄소 전달본 · 10월 8일</h2><p>에이프린트 무선제본 · 도련 사방 2mm · 책등 6.17mm · CMYK</p></div>
+    <div class="ov" id="ov"></div>
+  </section>
+
+  <section id="cover" aria-labelledby="cv-h">
+    <div class="head"><span class="eyebrow" id="cv-eye">표지</span><h2 id="cv-h">표지 디자인</h2><p>뒤표지 · 책등 · 앞표지 펼침 (재단선 기준, 도련 제외)</p></div>
+    <div class="cover">
+      <figure>
+        <div class="img" id="cv-img"><img id="cv-pic" alt="" width="1845" height="1286"><div class="spine" id="cv-spine"></div></div>
+        <figcaption><span>← 뒤표지</span><span>책등 6.17mm (점선)</span><span>앞표지 →</span></figcaption>
+      </figure>
+      <div class="notes-list" id="cv-notes"></div>
+    </div>
+    <div class="specs" id="cv-specs"></div>
+  </section>
+
+  <section id="contents" aria-labelledby="ct-h">
+    <div class="head"><span class="eyebrow">내용</span><h2 id="ct-h">128면은 이렇게 짜여 있어요</h2><p id="ct-sub"></p></div>
+    <div class="pagebar" aria-hidden="true"><div class="fm" style="flex:0 0 7%">앞 3면</div><div class="days">61일 × 2면 = 122면 (11/1 – 12/31)</div><div class="fm" style="flex:0 0 7%">뒤 3면</div></div>
+    <div class="pagebar-legend num"><span>1</span><span>4</span><span>125</span><span>128</span></div>
+    <div class="anatomy" id="ct-anatomy"></div>
+    <div class="extras" id="ct-extras"></div>
+  </section>
+
+  <section id="read" aria-labelledby="rd-h">
+    <div class="head"><span class="eyebrow">열람</span><h2 id="rd-h">펼침면 보기</h2><p>왼쪽 짝수 면 + 오른쪽 홀수 면. 하루치가 한 펼침에 들어갑니다.</p></div>
+    <div class="viewer">
+      <div class="stage">
+        <div class="stage-top">
+          <div class="meta"><b id="v-title"></b><span id="v-sub"></span></div>
+          <button class="btn" id="v-prev" aria-label="이전 펼침">‹ 이전</button>
+          <select id="v-jump" aria-label="날짜로 가기"></select>
+          <button class="btn" id="v-next" aria-label="다음 펼침">다음 ›</button>
+        </div>
+        <div class="scroller" id="v-scroll"><img id="v-img" alt="" width="1522" height="1076"></div>
+        <div class="stage-foot"><span>그림을 누르면 2배로 커져요</span><span><span class="kbd">←</span> <span class="kbd">→</span> 넘기기</span></div>
+      </div>
+      <aside class="panel" aria-labelledby="p-h">
+        <header><h3 id="p-h">이 펼침 검수</h3><span id="p-pages"></span></header>
+        <div class="thread" id="p-thread"></div>
+        <form class="add" id="p-form">
+          <div class="seg" role="radiogroup" aria-label="상태">
+            <label class="st-ok"><input type="radio" name="st" id="st-ok" value="ok" checked>확인 완료</label>
+            <label class="st-fix"><input type="radio" name="st" id="st-fix" value="fix">수정 필요</label>
+            <label class="st-memo"><input type="radio" name="st" id="st-memo" value="memo">메모</label>
+          </div>
+          <textarea id="p-text" placeholder="예: 2면 질문 2 보기 ③ 줄바꿈 어색함" aria-label="메모 내용"></textarea>
+          <div class="row"><span class="hint" id="p-hint">확인 완료는 내용 없이 남겨도 돼요</span><button class="btn primary" id="p-send" type="submit">남기기</button></div>
+        </form>
+      </aside>
+    </div>
+    <div class="filters" id="t-filters" role="group" aria-label="썸네일 거르기">
+      <button class="chip" data-f="all" aria-pressed="true">전체 65</button>
+      <button class="chip" data-f="fix" aria-pressed="false">수정 필요</button>
+      <button class="chip" data-f="todo" aria-pressed="false">아직 안 본 곳</button>
+      <button class="chip" data-f="ok" aria-pressed="false">확인 완료</button>
+    </div>
+    <div class="thumbs" id="thumbs"></div>
+  </section>
+
+  <section id="review" aria-labelledby="rv-h">
+    <div class="head"><span class="eyebrow">검수 메모</span><h2 id="rv-h">모든 메모</h2><p>네 권 전체. 날짜를 누르면 그 펼침으로 갑니다.</p></div>
+    <div class="filters" id="r-filters" role="group" aria-label="메모 거르기">
+      <button class="chip" data-r="all" aria-pressed="true">전체</button>
+      <button class="chip" data-r="fix" aria-pressed="false">수정 필요</button>
+      <button class="chip" data-r="memo" aria-pressed="false">메모</button>
+      <button class="chip" data-r="ok" aria-pressed="false">확인 완료</button>
+      <button class="chip" data-r="book" aria-pressed="false">지금 고른 책만</button>
+    </div>
+    <div id="r-out"></div>
+  </section>
+</main>
+
+<script>
+const DATA = {"books": [{"code": "low", "age": "저학년", "paper": "A4", "pw": 761, "ph": 1076, "tw": 200, "th": 141, "cols": 10, "spreads": [{"pages": [1], "label": "속표지"}, {"pages": [2, 3], "label": "이렇게 읽어요 · 여는 글"}, {"pages": [4, 5], "date": "11/1", "wd": "일", "title": "아침의 기쁨", "theme": "감사를 고백한 사람들", "ref": "시편 30:1–6"}, {"pages": [6, 7], "date": "11/2", "wd": "월", "title": "한나의 노래", "theme": "감사를 고백한 사람들", "ref": "사무엘상 2:1–7"}, {"pages": [8, 9], "date": "11/3", "wd": "화", "title": "함께여서 감사", "theme": "감사를 고백한 사람들", "ref": "빌립보서 1:3–8"}, {"pages": [10, 11], "date": "11/4", "wd": "수", "title": "구원은 하나님께", "theme": "감사를 고백한 사람들", "ref": "요나 2:6–10"}, {"pages": [12, 13], "date": "11/5", "wd": "목", "title": "다니엘의 기도", "theme": "감사를 고백한 사람들", "ref": "다니엘 6:5–10"}, {"pages": [14, 15], "date": "11/6", "wd": "금", "title": "눈이 밝아졌어요", "theme": "감사를 고백한 사람들", "ref": "누가복음 24:28–35"}, {"pages": [16, 17], "date": "11/7", "wd": "토", "title": "돌아온 한 사람", "theme": "감사를 고백한 사람들", "ref": "누가복음 17:11–19"}, {"pages": [18, 19], "date": "11/8", "wd": "일", "title": "나사로야 나오라", "theme": "감사를 고백한 사람들", "ref": "요한복음 11:38–44"}, {"pages": [20, 21], "date": "11/9", "wd": "월", "title": "변함없는 사랑", "theme": "감사는 믿음의 표현이에요", "ref": "시편 136:1-9"}, {"pages": [22, 23], "date": "11/10", "wd": "화", "title": "보이지 않아도", "theme": "감사는 믿음의 표현이에요", "ref": "히브리서 11:1-6"}, {"pages": [24, 25], "date": "11/11", "wd": "수", "title": "기쁘게 노래해요", "theme": "감사는 믿음의 표현이에요", "ref": "시편 100:1-5"}, {"pages": [26, 27], "date": "11/12", "wd": "목", "title": "걱정 대신 기도", "theme": "감사는 믿음의 표현이에요", "ref": "빌립보서 4:4-9"}, {"pages": [28, 29], "date": "11/13", "wd": "금", "title": "마음의 옷 입기", "theme": "감사는 믿음의 표현이에요", "ref": "골로새서 3:12-17"}, {"pages": [30, 31], "date": "11/14", "wd": "토", "title": "언제나 감사해요", "theme": "감사는 믿음의 표현이에요", "ref": "데살로니가전서 5:14–18"}, {"pages": [32, 33], "date": "11/15", "wd": "일", "title": "이름을 불러요", "theme": "감사는 믿음의 표현이에요", "ref": "역대상 16:7-11"}, {"pages": [34, 35], "date": "11/16", "wd": "월", "title": "소중한 감사", "theme": "감사를 훈련해요", "ref": "레위기 22:29–33"}, {"pages": [36, 37], "date": "11/17", "wd": "화", "title": "아침마다 감사", "theme": "감사를 훈련해요", "ref": "시편 92:1–5"}, {"pages": [38, 39], "date": "11/18", "wd": "수", "title": "감사하는 말", "theme": "감사를 훈련해요", "ref": "에베소서 5:1–8"}, {"pages": [40, 41], "date": "11/19", "wd": "목", "title": "뿌리 깊은 믿음", "theme": "감사를 훈련해요", "ref": "골로새서 2:1–7"}, {"pages": [42, 43], "date": "11/20", "wd": "금", "title": "디모데의 믿음", "theme": "감사를 훈련해요", "ref": "디모데후서 1:3–7"}, {"pages": [44, 45], "date": "11/21", "wd": "토", "title": "매일 내린 만나", "theme": "감사를 훈련해요", "ref": "민수기 11:4–10"}, {"pages": [46, 47], "date": "11/22", "wd": "일", "title": "기쁨의 우물", "theme": "감사를 훈련해요", "ref": "이사야 12:1–6"}, {"pages": [48, 49], "date": "11/23", "wd": "월", "title": "여호수아의 부탁", "theme": "한 해를 돌아보며 감사해요", "ref": "여호수아 23:1–7"}, {"pages": [50, 51], "date": "11/24", "wd": "화", "title": "잊지 말아요", "theme": "한 해를 돌아보며 감사해요", "ref": "시편 103:1–8"}, {"pages": [52, 53], "date": "11/25", "wd": "수", "title": "에벤에셀 돌", "theme": "한 해를 돌아보며 감사해요", "ref": "사무엘상 7:10–14"}, {"pages": [54, 55], "date": "11/26", "wd": "목", "title": "웃음과 눈물", "theme": "한 해를 돌아보며 감사해요", "ref": "에스라 3:8–13"}, {"pages": [56, 57], "date": "11/27", "wd": "금", "title": "함께 기뻐한 날", "theme": "한 해를 돌아보며 감사해요", "ref": "느헤미야 12:41–47"}, {"pages": [58, 59], "date": "11/28", "wd": "토", "title": "들으신 하나님", "theme": "한 해를 돌아보며 감사해요", "ref": "시편 116:1–9, 17"}, {"pages": [60, 61], "date": "11/29", "wd": "일", "title": "왕이신 하나님", "theme": "한 해를 돌아보며 감사해요", "ref": "요한계시록 11:15–19"}, {"pages": [62, 63], "date": "11/30", "wd": "월", "title": "잊지 않을게요", "theme": "하나님의 은혜를 기억해요", "ref": "신명기 8:10–18"}, {"pages": [64, 65], "date": "12/1", "wd": "화", "title": "하나님만 섬겨요", "theme": "하나님의 은혜를 기억해요", "ref": "여호수아 24:14–18"}, {"pages": [66, 67], "date": "12/2", "wd": "수", "title": "돌보시는 하나님", "theme": "하나님의 은혜를 기억해요", "ref": "느헤미야 9:16–21"}, {"pages": [68, 69], "date": "12/3", "wd": "목", "title": "은혜로 된 나", "theme": "하나님의 은혜를 기억해요", "ref": "고린도전서 15:7–11"}, {"pages": [70, 71], "date": "12/4", "wd": "금", "title": "자비로운 하나님", "theme": "하나님의 은혜를 기억해요", "ref": "디도서 3:3–7"}, {"pages": [72, 73], "date": "12/5", "wd": "토", "title": "안아 주신 사랑", "theme": "하나님의 은혜를 기억해요", "ref": "이사야 63:7–11"}, {"pages": [74, 75], "date": "12/6", "wd": "일", "title": "부끄럽지 않아요", "theme": "하나님의 은혜를 기억해요", "ref": "디모데후서 1:8–14"}, {"pages": [76, 77], "date": "12/7", "wd": "월", "title": "하나님의 약속", "theme": "예수님은 약속대로 오셨어요", "ref": "창세기 3:11–15"}, {"pages": [78, 79], "date": "12/8", "wd": "화", "title": "큰 빛이 비쳐요", "theme": "예수님은 약속대로 오셨어요", "ref": "이사야 9:1–7"}, {"pages": [80, 81], "date": "12/9", "wd": "수", "title": "목자들의 밤", "theme": "예수님은 약속대로 오셨어요", "ref": "누가복음 2:8–14"}, {"pages": [82, 83], "date": "12/10", "wd": "목", "title": "기다린 시므온", "theme": "예수님은 약속대로 오셨어요", "ref": "누가복음 2:25–32"}, {"pages": [84, 85], "date": "12/11", "wd": "금", "title": "큰 빛 예수님", "theme": "예수님은 약속대로 오셨어요", "ref": "마태복음 4:12–17"}, {"pages": [86, 87], "date": "12/12", "wd": "토", "title": "나를 따르라", "theme": "예수님은 약속대로 오셨어요", "ref": "마가복음 2:13–17"}, {"pages": [88, 89], "date": "12/13", "wd": "일", "title": "낮아지신 예수님", "theme": "예수님은 약속대로 오셨어요", "ref": "빌립보서 2:5–11"}, {"pages": [90, 91], "date": "12/14", "wd": "월", "title": "근심하지 말라", "theme": "예수님은 다시 오실 분이에요", "ref": "요한복음 14:1–6"}, {"pages": [92, 93], "date": "12/15", "wd": "화", "title": "다시 오세요", "theme": "예수님은 다시 오실 분이에요", "ref": "사도행전 1:6–11"}, {"pages": [94, 95], "date": "12/16", "wd": "수", "title": "무화과나무 비유", "theme": "예수님은 다시 오실 분이에요", "ref": "마태복음 24:32-36"}, {"pages": [96, 97], "date": "12/17", "wd": "목", "title": "깨어 기다려요", "theme": "예수님은 다시 오실 분이에요", "ref": "마가복음 13:32–37"}, {"pages": [98, 99], "date": "12/18", "wd": "금", "title": "다시 만나요", "theme": "예수님은 다시 오실 분이에요", "ref": "데살로니가전서 4:13–18"}, {"pages": [100, 101], "date": "12/19", "wd": "토", "title": "새 하늘 새 땅", "theme": "예수님은 다시 오실 분이에요", "ref": "요한계시록 21:1–7"}, {"pages": [102, 103], "date": "12/20", "wd": "일", "title": "기다리는 사람", "theme": "예수님은 다시 오실 분이에요", "ref": "베드로후서 3:8–13"}, {"pages": [104, 105], "date": "12/21", "wd": "월", "title": "사이좋은 동물들", "theme": "예수님을 기쁨으로 나눠요", "ref": "이사야 11:6-10"}, {"pages": [106, 107], "date": "12/22", "wd": "화", "title": "마리아의 노래", "theme": "예수님을 기쁨으로 나눠요", "ref": "누가복음 1:46–55"}, {"pages": [108, 109], "date": "12/23", "wd": "수", "title": "임마누엘 약속", "theme": "예수님을 기쁨으로 나눠요", "ref": "이사야 7:10–14"}, {"pages": [110, 111], "date": "12/24", "wd": "목", "title": "아름다운 발", "theme": "예수님을 기쁨으로 나눠요", "ref": "이사야 52:6–10"}, {"pages": [112, 113], "date": "12/25", "wd": "금", "title": "예수님의 이름", "theme": "예수님을 기쁨으로 나눠요", "ref": "마태복음 1:21-25"}, {"pages": [114, 115], "date": "12/26", "wd": "토", "title": "세상의 빛", "theme": "예수님을 기쁨으로 나눠요", "ref": "마태복음 5:14–18"}, {"pages": [116, 117], "date": "12/27", "wd": "일", "title": "가서 전해요", "theme": "예수님을 기쁨으로 나눠요", "ref": "마태복음 28:16–20"}, {"pages": [118, 119], "date": "12/28", "wd": "월", "title": "나의 목자", "theme": "소망하며 새해를 준비해요", "ref": "시편 23:1–6"}, {"pages": [120, 121], "date": "12/29", "wd": "화", "title": "형제를 도와요", "theme": "소망하며 새해를 준비해요", "ref": "여호수아 1:13-18"}, {"pages": [122, 123], "date": "12/30", "wd": "수", "title": "주님께 맡겨요", "theme": "소망하며 새해를 준비해요", "ref": "시편 37:3–7"}, {"pages": [124, 125], "date": "12/31", "wd": "목", "title": "마음을 다해", "theme": "소망하며 새해를 준비해요", "ref": "잠언 3:1–6"}, {"pages": [126, 127], "label": "말씀 여행 길 · 두 달 돌아보기"}, {"pages": [128], "label": "기도 노트 · 판권"}], "cw": 1845, "ch": 1286}, {"code": "high", "age": "고학년", "paper": "A4", "pw": 761, "ph": 1076, "tw": 200, "th": 141, "cols": 10, "spreads": [{"pages": [1], "label": "속표지"}, {"pages": [2, 3], "label": "이렇게 읽어요 · 여는 글"}, {"pages": [4, 5], "date": "11/1", "wd": "일", "title": "울음보다 긴 은총", "theme": "감사를 고백한 사람들", "ref": "시편 30:1–6"}, {"pages": [6, 7], "date": "11/2", "wd": "월", "title": "높이시고 낮추시는 하나님", "theme": "감사를 고백한 사람들", "ref": "사무엘상 2:1–7"}, {"pages": [8, 9], "date": "11/3", "wd": "화", "title": "끝까지 이루시는 하나님", "theme": "감사를 고백한 사람들", "ref": "빌립보서 1:3–8"}, {"pages": [10, 11], "date": "11/4", "wd": "수", "title": "구덩이에서 건지신 하나님", "theme": "감사를 고백한 사람들", "ref": "요나 2:6–10"}, {"pages": [12, 13], "date": "11/5", "wd": "목", "title": "전에 하던 대로", "theme": "감사를 고백한 사람들", "ref": "다니엘 6:5–10"}, {"pages": [14, 15], "date": "11/6", "wd": "금", "title": "떡을 떼실 때 알아보았어요", "theme": "감사를 고백한 사람들", "ref": "누가복음 24:28–35"}, {"pages": [16, 17], "date": "11/7", "wd": "토", "title": "돌아와 엎드린 사마리아 사람", "theme": "감사를 고백한 사람들", "ref": "누가복음 17:11–19"}, {"pages": [18, 19], "date": "11/8", "wd": "일", "title": "부르시기 전에 드린 감사", "theme": "감사를 고백한 사람들", "ref": "요한복음 11:38–44"}, {"pages": [20, 21], "date": "11/9", "wd": "월", "title": "아홉 번 들린 고백", "theme": "감사는 믿음의 표현이에요", "ref": "시편 136:1-9"}, {"pages": [22, 23], "date": "11/10", "wd": "화", "title": "믿음으로 산 사람들", "theme": "감사는 믿음의 표현이에요", "ref": "히브리서 11:1-6"}, {"pages": [24, 25], "date": "11/11", "wd": "수", "title": "감사하며 들어가는 문", "theme": "감사는 믿음의 표현이에요", "ref": "시편 100:1-5"}, {"pages": [26, 27], "date": "11/12", "wd": "목", "title": "염려 대신 감사의 기도", "theme": "감사는 믿음의 표현이에요", "ref": "빌립보서 4:4-9"}, {"pages": [28, 29], "date": "11/13", "wd": "금", "title": "용서받은 사람이 입는 옷", "theme": "감사는 믿음의 표현이에요", "ref": "골로새서 3:12-17"}, {"pages": [30, 31], "date": "11/14", "wd": "토", "title": "범사에 감사하라", "theme": "감사는 믿음의 표현이에요", "ref": "데살로니가전서 5:14–18"}, {"pages": [32, 33], "date": "11/15", "wd": "일", "title": "행하신 일을 알려요", "theme": "감사는 믿음의 표현이에요", "ref": "역대상 16:7-11"}, {"pages": [34, 35], "date": "11/16", "wd": "월", "title": "나는 여호와니라", "theme": "감사를 훈련해요", "ref": "레위기 22:29–33"}, {"pages": [36, 37], "date": "11/17", "wd": "화", "title": "아침에도 밤에도", "theme": "감사를 훈련해요", "ref": "시편 92:1–5"}, {"pages": [38, 39], "date": "11/18", "wd": "수", "title": "빛의 자녀가 하는 말", "theme": "감사를 훈련해요", "ref": "에베소서 5:1–8"}, {"pages": [40, 41], "date": "11/19", "wd": "목", "title": "뿌리내리고 세워지는 믿음", "theme": "감사를 훈련해요", "ref": "골로새서 2:1–7"}, {"pages": [42, 43], "date": "11/20", "wd": "금", "title": "믿음을 이어 준 사람들", "theme": "감사를 훈련해요", "ref": "디모데후서 1:3–7"}, {"pages": [44, 45], "date": "11/21", "wd": "토", "title": "불평에 가려진 만나", "theme": "감사를 훈련해요", "ref": "민수기 11:4–10"}, {"pages": [46, 47], "date": "11/22", "wd": "일", "title": "나의 힘, 나의 노래", "theme": "감사를 훈련해요", "ref": "이사야 12:1–6"}, {"pages": [48, 49], "date": "11/23", "wd": "월", "title": "여기까지 싸워 주신 하나님", "theme": "한 해를 돌아보며 감사해요", "ref": "여호수아 23:1–7"}, {"pages": [50, 51], "date": "11/24", "wd": "화", "title": "하나님의 은택을 세어 보아요", "theme": "한 해를 돌아보며 감사해요", "ref": "시편 103:1–8"}, {"pages": [52, 53], "date": "11/25", "wd": "수", "title": "여기까지 도우신 하나님", "theme": "한 해를 돌아보며 감사해요", "ref": "사무엘상 7:10–14"}, {"pages": [54, 55], "date": "11/26", "wd": "목", "title": "함성과 통곡이 섞인 날", "theme": "한 해를 돌아보며 감사해요", "ref": "에스라 3:8–13"}, {"pages": [56, 57], "date": "11/27", "wd": "금", "title": "즐거운 소리가 멀리 들렸어요", "theme": "한 해를 돌아보며 감사해요", "ref": "느헤미야 12:41–47"}, {"pages": [58, 59], "date": "11/28", "wd": "토", "title": "귀를 기울이신 하나님", "theme": "한 해를 돌아보며 감사해요", "ref": "시편 116:1–9, 17"}, {"pages": [60, 61], "date": "11/29", "wd": "일", "title": "일곱째 나팔이 울릴 때", "theme": "한 해를 돌아보며 감사해요", "ref": "요한계시록 11:15–19"}, {"pages": [62, 63], "date": "11/30", "wd": "월", "title": "배부를 때 기억하기", "theme": "하나님의 은혜를 기억해요", "ref": "신명기 8:10–18"}, {"pages": [64, 65], "date": "12/1", "wd": "화", "title": "오늘 택하라", "theme": "하나님의 은혜를 기억해요", "ref": "여호수아 24:14–18"}, {"pages": [66, 67], "date": "12/2", "wd": "수", "title": "그러나 주께서는", "theme": "하나님의 은혜를 기억해요", "ref": "느헤미야 9:16–21"}, {"pages": [68, 69], "date": "12/3", "wd": "목", "title": "내가 나 된 것은", "theme": "하나님의 은혜를 기억해요", "ref": "고린도전서 15:7–11"}, {"pages": [70, 71], "date": "12/4", "wd": "금", "title": "우리도 전에는", "theme": "하나님의 은혜를 기억해요", "ref": "디도서 3:3–7"}, {"pages": [72, 73], "date": "12/5", "wd": "토", "title": "은총을 말하리라", "theme": "하나님의 은혜를 기억해요", "ref": "이사야 63:7–11"}, {"pages": [74, 75], "date": "12/6", "wd": "일", "title": "내가 믿는 분을 알아요", "theme": "하나님의 은혜를 기억해요", "ref": "디모데후서 1:8–14"}, {"pages": [76, 77], "date": "12/7", "wd": "월", "title": "처음 주신 구원의 약속", "theme": "예수님은 약속대로 오셨어요", "ref": "창세기 3:11–15"}, {"pages": [78, 79], "date": "12/8", "wd": "화", "title": "한 아기가 우리에게 났어요", "theme": "예수님은 약속대로 오셨어요", "ref": "이사야 9:1–7"}, {"pages": [80, 81], "date": "12/9", "wd": "수", "title": "온 백성에게 미칠 큰 기쁨", "theme": "예수님은 약속대로 오셨어요", "ref": "누가복음 2:8–14"}, {"pages": [82, 83], "date": "12/10", "wd": "목", "title": "오래 기다린 사람 시므온", "theme": "예수님은 약속대로 오셨어요", "ref": "누가복음 2:25–32"}, {"pages": [84, 85], "date": "12/11", "wd": "금", "title": "어둠 속에 비친 빛", "theme": "예수님은 약속대로 오셨어요", "ref": "마태복음 4:12–17"}, {"pages": [86, 87], "date": "12/12", "wd": "토", "title": "의사가 필요한 사람", "theme": "예수님은 약속대로 오셨어요", "ref": "마가복음 2:13–17"}, {"pages": [88, 89], "date": "12/13", "wd": "일", "title": "내려오신 길, 높이신 이름", "theme": "예수님은 약속대로 오셨어요", "ref": "빌립보서 2:5–11"}, {"pages": [90, 91], "date": "12/14", "wd": "월", "title": "거처를 예비하러 가신 예수님", "theme": "예수님은 다시 오실 분이에요", "ref": "요한복음 14:1–6"}, {"pages": [92, 93], "date": "12/15", "wd": "화", "title": "하늘만 쳐다보지 말고", "theme": "예수님은 다시 오실 분이에요", "ref": "사도행전 1:6–11"}, {"pages": [94, 95], "date": "12/16", "wd": "수", "title": "문 앞에 이른 줄 알라", "theme": "예수님은 다시 오실 분이에요", "ref": "마태복음 24:32-36"}, {"pages": [96, 97], "date": "12/17", "wd": "목", "title": "맡겨진 일을 하며", "theme": "예수님은 다시 오실 분이에요", "ref": "마가복음 13:32–37"}, {"pages": [98, 99], "date": "12/18", "wd": "금", "title": "소망이 있는 슬픔", "theme": "예수님은 다시 오실 분이에요", "ref": "데살로니가전서 4:13–18"}, {"pages": [100, 101], "date": "12/19", "wd": "토", "title": "모든 눈물을 닦아 주시니", "theme": "예수님은 다시 오실 분이에요", "ref": "요한계시록 21:1–7"}, {"pages": [102, 103], "date": "12/20", "wd": "일", "title": "더딘 것이 아니라", "theme": "예수님은 다시 오실 분이에요", "ref": "베드로후서 3:8–13"}, {"pages": [104, 105], "date": "12/21", "wd": "월", "title": "해 됨도 상함도 없는 나라", "theme": "예수님을 기쁨으로 나눠요", "ref": "이사야 11:6-10"}, {"pages": [106, 107], "date": "12/22", "wd": "화", "title": "낮은 자를 높이신 하나님", "theme": "예수님을 기쁨으로 나눠요", "ref": "누가복음 1:46–55"}, {"pages": [108, 109], "date": "12/23", "wd": "수", "title": "징조를 거절한 왕", "theme": "예수님을 기쁨으로 나눠요", "ref": "이사야 7:10–14"}, {"pages": [110, 111], "date": "12/24", "wd": "목", "title": "산을 넘는 아름다운 발", "theme": "예수님을 기쁨으로 나눠요", "ref": "이사야 52:6–10"}, {"pages": [112, 113], "date": "12/25", "wd": "금", "title": "두 이름, 예수와 임마누엘", "theme": "예수님을 기쁨으로 나눠요", "ref": "마태복음 1:21-25"}, {"pages": [114, 115], "date": "12/26", "wd": "토", "title": "숨길 수 없는 빛", "theme": "예수님을 기쁨으로 나눠요", "ref": "마태복음 5:14–18"}, {"pages": [116, 117], "date": "12/27", "wd": "일", "title": "가서 제자로 삼으라", "theme": "예수님을 기쁨으로 나눠요", "ref": "마태복음 28:16–20"}, {"pages": [118, 119], "date": "12/28", "wd": "월", "title": "부족함이 없는 이유", "theme": "소망하며 새해를 준비해요", "ref": "시편 23:1–6"}, {"pages": [120, 121], "date": "12/29", "wd": "화", "title": "먼저 받은 사람들의 약속", "theme": "소망하며 새해를 준비해요", "ref": "여호수아 1:13-18"}, {"pages": [122, 123], "date": "12/30", "wd": "수", "title": "맡기고 기다리기", "theme": "소망하며 새해를 준비해요", "ref": "시편 37:3–7"}, {"pages": [124, 125], "date": "12/31", "wd": "목", "title": "마음판에 새기는 말씀", "theme": "소망하며 새해를 준비해요", "ref": "잠언 3:1–6"}, {"pages": [126, 127], "label": "말씀 여행 길 · 두 달 돌아보기"}, {"pages": [128], "label": "기도 노트 · 판권"}], "cw": 1845, "ch": 1286}, {"code": "teen", "age": "청소년", "paper": "A5", "pw": 758, "ph": 1075, "tw": 200, "th": 142, "cols": 10, "spreads": [{"pages": [1], "label": "속표지"}, {"pages": [2, 3], "label": "이렇게 읽어요 · 여는 글"}, {"pages": [4, 5], "date": "11/1", "wd": "일", "title": "저녁의 울음, 아침의 기쁨", "theme": "감사를 고백한 사람들", "ref": "시편 30:1–6"}, {"pages": [6, 7], "date": "11/2", "wd": "월", "title": "한나가 자랑한 하나님", "theme": "감사를 고백한 사람들", "ref": "사무엘상 2:1–7"}, {"pages": [8, 9], "date": "11/3", "wd": "화", "title": "경쟁자가 아니라 동역자", "theme": "감사를 고백한 사람들", "ref": "빌립보서 1:3–8"}, {"pages": [10, 11], "date": "11/4", "wd": "수", "title": "바닥에서 드린 감사", "theme": "감사를 고백한 사람들", "ref": "요나 2:6–10"}, {"pages": [12, 13], "date": "11/5", "wd": "목", "title": "결과를 모를 때의 감사", "theme": "감사를 고백한 사람들", "ref": "다니엘 6:5–10"}, {"pages": [14, 15], "date": "11/6", "wd": "금", "title": "마음이 뜨거워진 길", "theme": "감사를 고백한 사람들", "ref": "누가복음 24:28–35"}, {"pages": [16, 17], "date": "11/7", "wd": "토", "title": "그 아홉은 어디 있느냐", "theme": "감사를 고백한 사람들", "ref": "누가복음 17:11–19"}, {"pages": [18, 19], "date": "11/8", "wd": "일", "title": "감사의 근거를 따라가 보면", "theme": "감사를 고백한 사람들", "ref": "요한복음 11:38–44"}, {"pages": [20, 21], "date": "11/9", "wd": "월", "title": "반복이 지루하지 않은 이유", "theme": "감사는 믿음의 표현이에요", "ref": "시편 136:1-9"}, {"pages": [22, 23], "date": "11/10", "wd": "화", "title": "보이지 않는 것들의 증거", "theme": "감사는 믿음의 표현이에요", "ref": "히브리서 11:1-6"}, {"pages": [24, 25], "date": "11/11", "wd": "수", "title": "우리는 그의 것이니", "theme": "감사는 믿음의 표현이에요", "ref": "시편 100:1-5"}, {"pages": [26, 27], "date": "11/12", "wd": "목", "title": "염려 대신 아뢰기", "theme": "감사는 믿음의 표현이에요", "ref": "빌립보서 4:4-9"}, {"pages": [28, 29], "date": "11/13", "wd": "금", "title": "그리스도의 평강이 결정하게", "theme": "감사는 믿음의 표현이에요", "ref": "골로새서 3:12-17"}, {"pages": [30, 31], "date": "11/14", "wd": "토", "title": "항상, 쉬지 말고, 범사에", "theme": "감사는 믿음의 표현이에요", "ref": "데살로니가전서 5:14–18"}, {"pages": [32, 33], "date": "11/15", "wd": "일", "title": "자랑할 이름", "theme": "감사는 믿음의 표현이에요", "ref": "역대상 16:7-11"}, {"pages": [34, 35], "date": "11/16", "wd": "월", "title": "감사에도 방식이 있을까", "theme": "감사를 훈련해요", "ref": "레위기 22:29–33"}, {"pages": [36, 37], "date": "11/17", "wd": "화", "title": "하루의 처음과 끝에", "theme": "감사를 훈련해요", "ref": "시편 92:1–5"}, {"pages": [38, 39], "date": "11/18", "wd": "수", "title": "농담 대신 감사", "theme": "감사를 훈련해요", "ref": "에베소서 5:1–8"}, {"pages": [40, 41], "date": "11/19", "wd": "목", "title": "그럴듯한 말보다 깊은 뿌리", "theme": "감사를 훈련해요", "ref": "골로새서 2:1–7"}, {"pages": [42, 43], "date": "11/20", "wd": "금", "title": "두려움 대신 주신 마음", "theme": "감사를 훈련해요", "ref": "디모데후서 1:3–7"}, {"pages": [44, 45], "date": "11/21", "wd": "토", "title": "편집된 기억, 보이지 않는 만나", "theme": "감사를 훈련해요", "ref": "민수기 11:4–10"}, {"pages": [46, 47], "date": "11/22", "wd": "일", "title": "감사가 노래가 될 때", "theme": "감사를 훈련해요", "ref": "이사야 12:1–6"}, {"pages": [48, 49], "date": "11/23", "wd": "월", "title": "끝에서 돌아보는 길", "theme": "한 해를 돌아보며 감사해요", "ref": "여호수아 23:1–7"}, {"pages": [50, 51], "date": "11/24", "wd": "화", "title": "내 영혼에게 하는 말", "theme": "한 해를 돌아보며 감사해요", "ref": "시편 103:1–8"}, {"pages": [52, 53], "date": "11/25", "wd": "수", "title": "돌에 새긴 기억", "theme": "한 해를 돌아보며 감사해요", "ref": "사무엘상 7:10–14"}, {"pages": [54, 55], "date": "11/26", "wd": "목", "title": "두 소리가 섞인 감사", "theme": "한 해를 돌아보며 감사해요", "ref": "에스라 3:8–13"}, {"pages": [56, 57], "date": "11/27", "wd": "금", "title": "축제 다음 날에도 이어지는 감사", "theme": "한 해를 돌아보며 감사해요", "ref": "느헤미야 12:41–47"}, {"pages": [58, 59], "date": "11/28", "wd": "토", "title": "내가 평생에 기도하리로다", "theme": "한 해를 돌아보며 감사해요", "ref": "시편 116:1–9, 17"}, {"pages": [60, 61], "date": "11/29", "wd": "일", "title": "이미 이루어진 것처럼 드린 감사", "theme": "한 해를 돌아보며 감사해요", "ref": "요한계시록 11:15–19"}, {"pages": [62, 63], "date": "11/30", "wd": "월", "title": "내 손의 힘으로?", "theme": "하나님의 은혜를 기억해요", "ref": "신명기 8:10–18"}, {"pages": [64, 65], "date": "12/1", "wd": "화", "title": "오늘, 누구를 섬길까", "theme": "하나님의 은혜를 기억해요", "ref": "여호수아 24:14–18"}, {"pages": [66, 67], "date": "12/2", "wd": "수", "title": "그래도 버리지 않으셨다", "theme": "하나님의 은혜를 기억해요", "ref": "느헤미야 9:16–21"}, {"pages": [68, 69], "date": "12/3", "wd": "목", "title": "가장 작은 자의 고백", "theme": "하나님의 은혜를 기억해요", "ref": "고린도전서 15:7–11"}, {"pages": [70, 71], "date": "12/4", "wd": "금", "title": "자격 없이 받은 자비", "theme": "하나님의 은혜를 기억해요", "ref": "디도서 3:3–7"}, {"pages": [72, 73], "date": "12/5", "wd": "토", "title": "이제 어디 계시냐", "theme": "하나님의 은혜를 기억해요", "ref": "이사야 63:7–11"}, {"pages": [74, 75], "date": "12/6", "wd": "일", "title": "부끄러움보다 큰 확신", "theme": "하나님의 은혜를 기억해요", "ref": "디모데후서 1:8–14"}, {"pages": [76, 77], "date": "12/7", "wd": "월", "title": "남 탓과 약속 사이", "theme": "예수님은 약속대로 오셨어요", "ref": "창세기 3:11–15"}, {"pages": [78, 79], "date": "12/8", "wd": "화", "title": "그늘진 땅에 비친 빛", "theme": "예수님은 약속대로 오셨어요", "ref": "이사야 9:1–7"}, {"pages": [80, 81], "date": "12/9", "wd": "수", "title": "무서워하지 말라", "theme": "예수님은 약속대로 오셨어요", "ref": "누가복음 2:8–14"}, {"pages": [82, 83], "date": "12/10", "wd": "목", "title": "기다림이 찬송이 될 때", "theme": "예수님은 약속대로 오셨어요", "ref": "누가복음 2:25–32"}, {"pages": [84, 85], "date": "12/11", "wd": "금", "title": "빛이 먼저 찾아간 곳", "theme": "예수님은 약속대로 오셨어요", "ref": "마태복음 4:12–17"}, {"pages": [86, 87], "date": "12/12", "wd": "토", "title": "누구와 밥을 먹느냐", "theme": "예수님은 약속대로 오셨어요", "ref": "마가복음 2:13–17"}, {"pages": [88, 89], "date": "12/13", "wd": "일", "title": "움켜쥐지 않은 마음", "theme": "예수님은 약속대로 오셨어요", "ref": "빌립보서 2:5–11"}, {"pages": [90, 91], "date": "12/14", "wd": "월", "title": "길을 모르겠다는 도마에게", "theme": "예수님은 다시 오실 분이에요", "ref": "요한복음 14:1–6"}, {"pages": [92, 93], "date": "12/15", "wd": "화", "title": "언제냐는 질문에 대한 대답", "theme": "예수님은 다시 오실 분이에요", "ref": "사도행전 1:6–11"}, {"pages": [94, 95], "date": "12/16", "wd": "수", "title": "날짜보다 말씀", "theme": "예수님은 다시 오실 분이에요", "ref": "마태복음 24:32-36"}, {"pages": [96, 97], "date": "12/17", "wd": "목", "title": "깨어 있다는 것", "theme": "예수님은 다시 오실 분이에요", "ref": "마가복음 13:32–37"}, {"pages": [98, 99], "date": "12/18", "wd": "금", "title": "서로 위로하라", "theme": "예수님은 다시 오실 분이에요", "ref": "데살로니가전서 4:13–18"}, {"pages": [100, 101], "date": "12/19", "wd": "토", "title": "만물을 새롭게 하노라", "theme": "예수님은 다시 오실 분이에요", "ref": "요한계시록 21:1–7"}, {"pages": [102, 103], "date": "12/20", "wd": "일", "title": "왜 아직 안 오실까", "theme": "예수님은 다시 오실 분이에요", "ref": "베드로후서 3:8–13"}, {"pages": [104, 105], "date": "12/21", "wd": "월", "title": "이새의 뿌리에서 난 싹", "theme": "예수님을 기쁨으로 나눠요", "ref": "이사야 11:6-10"}, {"pages": [106, 107], "date": "12/22", "wd": "화", "title": "뒤집히는 노래", "theme": "예수님을 기쁨으로 나눠요", "ref": "누가복음 1:46–55"}, {"pages": [108, 109], "date": "12/23", "wd": "수", "title": "경건해 보이는 거절", "theme": "예수님을 기쁨으로 나눠요", "ref": "이사야 7:10–14"}, {"pages": [110, 111], "date": "12/24", "wd": "목", "title": "소식이 도착하는 순간", "theme": "예수님을 기쁨으로 나눠요", "ref": "이사야 52:6–10"}, {"pages": [112, 113], "date": "12/25", "wd": "금", "title": "꿈에서 깬 요셉의 순종", "theme": "예수님을 기쁨으로 나눠요", "ref": "마태복음 1:21-25"}, {"pages": [114, 115], "date": "12/26", "wd": "토", "title": "빛은 나를 비추지 않는다", "theme": "예수님을 기쁨으로 나눠요", "ref": "마태복음 5:14–18"}, {"pages": [116, 117], "date": "12/27", "wd": "일", "title": "의심하는 사람도 있었다", "theme": "예수님을 기쁨으로 나눠요", "ref": "마태복음 28:16–20"}, {"pages": [118, 119], "date": "12/28", "wd": "월", "title": "골짜기에서도 함께", "theme": "소망하며 새해를 준비해요", "ref": "시편 23:1–6"}, {"pages": [120, 121], "date": "12/29", "wd": "화", "title": "내 몫을 받은 뒤에", "theme": "소망하며 새해를 준비해요", "ref": "여호수아 1:13-18"}, {"pages": [122, 123], "date": "12/30", "wd": "수", "title": "불평 대신 잠잠히", "theme": "소망하며 새해를 준비해요", "ref": "시편 37:3–7"}, {"pages": [124, 125], "date": "12/31", "wd": "목", "title": "내 명철보다 크신 분", "theme": "소망하며 새해를 준비해요", "ref": "잠언 3:1–6"}, {"pages": [126, 127], "label": "말씀 여행 길 · 두 달 돌아보기"}, {"pages": [128], "label": "기도 노트 · 판권"}], "cw": 1785, "ch": 1240}, {"code": "young", "age": "청년", "paper": "A5", "pw": 758, "ph": 1075, "tw": 200, "th": 142, "cols": 10, "spreads": [{"pages": [1], "label": "속표지"}, {"pages": [2, 3], "label": "이렇게 읽어요 · 여는 글"}, {"pages": [4, 5], "date": "11/1", "wd": "일", "title": "은총은 울음보다 깁니다", "theme": "감사를 고백한 사람들", "ref": "시편 30:1–6"}, {"pages": [6, 7], "date": "11/2", "wd": "월", "title": "높고 낮음을 정하시는 분", "theme": "감사를 고백한 사람들", "ref": "사무엘상 2:1–7"}, {"pages": [8, 9], "date": "11/3", "wd": "화", "title": "시작하신 이가 이루십니다", "theme": "감사를 고백한 사람들", "ref": "빌립보서 1:3–8"}, {"pages": [10, 11], "date": "11/4", "wd": "수", "title": "구원은 여호와께 속했습니다", "theme": "감사를 고백한 사람들", "ref": "요나 2:6–10"}, {"pages": [12, 13], "date": "11/5", "wd": "목", "title": "결과 이전의 감사", "theme": "감사를 고백한 사람들", "ref": "다니엘 6:5–10"}, {"pages": [14, 15], "date": "11/6", "wd": "금", "title": "떡을 떼심으로 알려지신 주님", "theme": "감사를 고백한 사람들", "ref": "누가복음 24:28–35"}, {"pages": [16, 17], "date": "11/7", "wd": "토", "title": "돌아와 영광을 돌린 사람", "theme": "감사를 고백한 사람들", "ref": "누가복음 17:11–19"}, {"pages": [18, 19], "date": "11/8", "wd": "일", "title": "들으신 것을 감사하나이다", "theme": "감사를 고백한 사람들", "ref": "요한복음 11:38–44"}, {"pages": [20, 21], "date": "11/9", "wd": "월", "title": "모든 일 뒤의 같은 고백", "theme": "감사는 믿음의 표현이에요", "ref": "시편 136:1-9"}, {"pages": [22, 23], "date": "11/10", "wd": "화", "title": "보이는 것 너머의 증거", "theme": "감사는 믿음의 표현이에요", "ref": "히브리서 11:1-6"}, {"pages": [24, 25], "date": "11/11", "wd": "수", "title": "증명하지 않아도 되는 소속", "theme": "감사는 믿음의 표현이에요", "ref": "시편 100:1-5"}, {"pages": [26, 27], "date": "11/12", "wd": "목", "title": "평강이 지키는 마음과 생각", "theme": "감사는 믿음의 표현이에요", "ref": "빌립보서 4:4-9"}, {"pages": [28, 29], "date": "11/13", "wd": "금", "title": "무엇을 하든지 주 예수의 이름으로", "theme": "감사는 믿음의 표현이에요", "ref": "골로새서 3:12-17"}, {"pages": [30, 31], "date": "11/14", "wd": "토", "title": "그리스도 예수 안에서 하나님의 뜻", "theme": "감사는 믿음의 표현이에요", "ref": "데살로니가전서 5:14–18"}, {"pages": [32, 33], "date": "11/15", "wd": "일", "title": "그의 얼굴을 항상 찾으라", "theme": "감사는 믿음의 표현이에요", "ref": "역대상 16:7-11"}, {"pages": [34, 35], "date": "11/16", "wd": "월", "title": "받으실 만한 감사", "theme": "감사를 훈련해요", "ref": "레위기 22:29–33"}, {"pages": [36, 37], "date": "11/17", "wd": "화", "title": "아침의 인자, 밤의 성실", "theme": "감사를 훈련해요", "ref": "시편 92:1–5"}, {"pages": [38, 39], "date": "11/18", "wd": "수", "title": "오히려 감사하는 말을 하라", "theme": "감사를 훈련해요", "ref": "에베소서 5:1–8"}, {"pages": [40, 41], "date": "11/19", "wd": "목", "title": "받은 대로 그 안에서 행하라", "theme": "감사를 훈련해요", "ref": "골로새서 2:1–7"}, {"pages": [42, 43], "date": "11/20", "wd": "금", "title": "기억에서 시작된 감사", "theme": "감사를 훈련해요", "ref": "디모데후서 1:3–7"}, {"pages": [44, 45], "date": "11/21", "wd": "토", "title": "만나 외에는 보이지 않을 때", "theme": "감사를 훈련해요", "ref": "민수기 11:4–10"}, {"pages": [46, 47], "date": "11/22", "wd": "일", "title": "진노가 돌아선 자리의 노래", "theme": "감사를 훈련해요", "ref": "이사야 12:1–6"}, {"pages": [48, 49], "date": "11/23", "wd": "월", "title": "결산의 주어는 하나님입니다", "theme": "한 해를 돌아보며 감사해요", "ref": "여호수아 23:1–7"}, {"pages": [50, 51], "date": "11/24", "wd": "화", "title": "모든 은택을 잊지 말라", "theme": "한 해를 돌아보며 감사해요", "ref": "시편 103:1–8"}, {"pages": [52, 53], "date": "11/25", "wd": "수", "title": "여기까지 우리를 도우셨다", "theme": "한 해를 돌아보며 감사해요", "ref": "사무엘상 7:10–14"}, {"pages": [54, 55], "date": "11/26", "wd": "목", "title": "기초 앞에서 함께 우는 감사", "theme": "한 해를 돌아보며 감사해요", "ref": "에스라 3:8–13"}, {"pages": [56, 57], "date": "11/27", "wd": "금", "title": "감사의 축제와 곳간", "theme": "한 해를 돌아보며 감사해요", "ref": "느헤미야 12:41–47"}, {"pages": [58, 59], "date": "11/28", "wd": "토", "title": "들으신 분 앞에서 행하리로다", "theme": "한 해를 돌아보며 감사해요", "ref": "시편 116:1–9, 17"}, {"pages": [60, 61], "date": "11/29", "wd": "일", "title": "옛적에도 지금도 계신 주", "theme": "한 해를 돌아보며 감사해요", "ref": "요한계시록 11:15–19"}, {"pages": [62, 63], "date": "11/30", "wd": "월", "title": "풍요가 기억을 지울 때", "theme": "하나님의 은혜를 기억해요", "ref": "신명기 8:10–18"}, {"pages": [64, 65], "date": "12/1", "wd": "화", "title": "그러므로 우리도 섬기리니", "theme": "하나님의 은혜를 기억해요", "ref": "여호수아 24:14–18"}, {"pages": [66, 67], "date": "12/2", "wd": "수", "title": "용서하시는 하나님이시라", "theme": "하나님의 은혜를 기억해요", "ref": "느헤미야 9:16–21"}, {"pages": [68, 69], "date": "12/3", "wd": "목", "title": "은혜가 헛되지 아니하여", "theme": "하나님의 은혜를 기억해요", "ref": "고린도전서 15:7–11"}, {"pages": [70, 71], "date": "12/4", "wd": "금", "title": "자비와 사람 사랑하심이 나타날 때", "theme": "하나님의 은혜를 기억해요", "ref": "디도서 3:3–7"}, {"pages": [72, 73], "date": "12/5", "wd": "토", "title": "옛적을 기억하는 기도", "theme": "하나님의 은혜를 기억해요", "ref": "이사야 63:7–11"}, {"pages": [74, 75], "date": "12/6", "wd": "일", "title": "내가 믿는 자를 내가 알고", "theme": "하나님의 은혜를 기억해요", "ref": "디모데후서 1:8–14"}, {"pages": [76, 77], "date": "12/7", "wd": "월", "title": "심판 속에 담긴 첫 약속", "theme": "예수님은 약속대로 오셨어요", "ref": "창세기 3:11–15"}, {"pages": [78, 79], "date": "12/8", "wd": "화", "title": "만군의 여호와의 열심", "theme": "예수님은 약속대로 오셨어요", "ref": "이사야 9:1–7"}, {"pages": [80, 81], "date": "12/9", "wd": "수", "title": "오늘 너희를 위하여", "theme": "예수님은 약속대로 오셨어요", "ref": "누가복음 2:8–14"}, {"pages": [82, 83], "date": "12/10", "wd": "목", "title": "주재여, 이제는", "theme": "예수님은 약속대로 오셨어요", "ref": "누가복음 2:25–32"}, {"pages": [84, 85], "date": "12/11", "wd": "금", "title": "변두리에서 시작된 천국 선포", "theme": "예수님은 약속대로 오셨어요", "ref": "마태복음 4:12–17"}, {"pages": [86, 87], "date": "12/12", "wd": "토", "title": "죄인을 부르러 오신 의사", "theme": "예수님은 약속대로 오셨어요", "ref": "마가복음 2:13–17"}, {"pages": [88, 89], "date": "12/13", "wd": "일", "title": "그리스도 예수의 마음을 품으라", "theme": "예수님은 약속대로 오셨어요", "ref": "빌립보서 2:5–11"}, {"pages": [90, 91], "date": "12/14", "wd": "월", "title": "길이요 진리요 생명이라", "theme": "예수님은 다시 오실 분이에요", "ref": "요한복음 14:1–6"}, {"pages": [92, 93], "date": "12/15", "wd": "화", "title": "때보다 증인으로", "theme": "예수님은 다시 오실 분이에요", "ref": "사도행전 1:6–11"}, {"pages": [94, 95], "date": "12/16", "wd": "수", "title": "천지는 없어질지언정", "theme": "예수님은 다시 오실 분이에요", "ref": "마태복음 24:32-36"}, {"pages": [96, 97], "date": "12/17", "wd": "목", "title": "주인이 언제 올는지", "theme": "예수님은 다시 오실 분이에요", "ref": "마가복음 13:32–37"}, {"pages": [98, 99], "date": "12/18", "wd": "금", "title": "항상 주와 함께", "theme": "예수님은 다시 오실 분이에요", "ref": "데살로니가전서 4:13–18"}, {"pages": [100, 101], "date": "12/19", "wd": "토", "title": "보라, 하나님의 장막이", "theme": "예수님은 다시 오실 분이에요", "ref": "요한계시록 21:1–7"}, {"pages": [102, 103], "date": "12/20", "wd": "일", "title": "의가 있는 곳을 바라보도다", "theme": "예수님은 다시 오실 분이에요", "ref": "베드로후서 3:8–13"}, {"pages": [104, 105], "date": "12/21", "wd": "월", "title": "물이 바다를 덮음 같이", "theme": "예수님을 기쁨으로 나눠요", "ref": "이사야 11:6-10"}, {"pages": [106, 107], "date": "12/22", "wd": "화", "title": "비천함을 돌보신 하나님", "theme": "예수님을 기쁨으로 나눠요", "ref": "누가복음 1:46–55"}, {"pages": [108, 109], "date": "12/23", "wd": "수", "title": "주께서 친히 주시는 징조", "theme": "예수님을 기쁨으로 나눠요", "ref": "이사야 7:10–14"}, {"pages": [110, 111], "date": "12/24", "wd": "목", "title": "네 하나님이 통치하신다", "theme": "예수님을 기쁨으로 나눠요", "ref": "이사야 52:6–10"}, {"pages": [112, 113], "date": "12/25", "wd": "금", "title": "분부대로 행하여", "theme": "예수님을 기쁨으로 나눠요", "ref": "마태복음 1:21-25"}, {"pages": [114, 115], "date": "12/26", "wd": "토", "title": "아버지께 영광을 돌리게 하는 빛", "theme": "예수님을 기쁨으로 나눠요", "ref": "마태복음 5:14–18"}, {"pages": [116, 117], "date": "12/27", "wd": "일", "title": "모든 권세, 모든 민족, 항상", "theme": "예수님을 기쁨으로 나눠요", "ref": "마태복음 28:16–20"}, {"pages": [118, 119], "date": "12/28", "wd": "월", "title": "선하심과 인자하심이 따르리니", "theme": "소망하며 새해를 준비해요", "ref": "시편 23:1–6"}, {"pages": [120, 121], "date": "12/29", "wd": "화", "title": "받은 안식, 나누는 수고", "theme": "소망하며 새해를 준비해요", "ref": "여호수아 1:13-18"}, {"pages": [122, 123], "date": "12/30", "wd": "수", "title": "네 길을 여호와께 맡기라", "theme": "소망하며 새해를 준비해요", "ref": "시편 37:3–7"}, {"pages": [124, 125], "date": "12/31", "wd": "목", "title": "범사에 그를 인정하라", "theme": "소망하며 새해를 준비해요", "ref": "잠언 3:1–6"}, {"pages": [126, 127], "label": "말씀 여행 길 · 두 달 돌아보기"}, {"pages": [128], "label": "기도 노트 · 판권"}], "cw": 1785, "ch": 1240}]};
+const BOOKS = DATA.books;
+const BOOK_INFO = {
+  low:   { color: '#e9533f', size: 'A4 210×297', work: '214×301', cover: '426.17×297', coverWork: '430.17×301' },
+  high:  { color: '#2a7fc9', size: 'A4 210×297', work: '214×301', cover: '426.17×297', coverWork: '430.17×301' },
+  teen:  { color: '#1e9a82', size: 'A5 148×210', work: '152×214', cover: '302.17×210', coverWork: '306.17×214' },
+  young: { color: '#2c4a7a', size: 'A5 148×210', work: '152×214', cover: '302.17×210', coverWork: '306.17×214' },
+};
+const COVER_NOTES = {
+  kids: [
+    ['앞표지 그림', '열매가 가득 달린 가을 나무 아래에서 바구니에 열매를 담는 아이들과 저녁 하늘의 별. 11월의 감사(열매)와 12월의 기다림(별)을 한 장면에 담았어요. 저학년·고학년이 같은 그림을 씁니다.'],
+    ['글자', '9–10월호와 같은 체계: BIBLE TREE / 2026 / 1112. 네 권 모두 블랙한산스. 11은 단풍 주황(감사), 12는 겨울 하늘빛(기다림). 아래에 부제 ‘감사와 기다림’과 연령 띠.'],
+    ['뒤표지', '앞표지 하늘을 이어 깐 바탕에 짧은 문구 하나 “고마워요, 그리고 기다려요”. 아래 왼쪽에 BIBLE TREE 2026 · 11–12와 발행 기관, 오른쪽에 바이블트리 웹 QR(검정 한 색).'],
+    ['책등', '뒤표지 바탕색 위에 BIBLE TREE 2026 1112 · 감사와 기다림 · 연령 띠, 아래쪽에 HEM - 건강한교육사역. 위에서 아래로 읽어요.', '시안'],
+  ],
+  teen: [
+    ['앞표지 그림', '짙은 바탕 위에 종이로 오린 듯한 가지, 단풍잎, 붉은 열매와 작은 별. 사람 없이 물건 하나로 감사(열매)와 기다림(별)을 보여 줘요.'],
+    ['글자', '네 권 공통 체계: BIBLE TREE / 2026 / 1112, 블랙한산스. 11은 단풍 주황, 12는 겨울 하늘빛. 부제 ‘감사와 기다림’, 청록 연령 띠.'],
+    ['뒤표지', '앞표지 바탕을 이어 깐 면에 문구 “열매를 세던 손으로 별을 기다립니다”. 아래에 BIBLE TREE 2026 · 11–12, 발행 기관, 바이블트리 웹 QR(검정 한 색).'],
+    ['책등', '뒤표지 바탕색 위에 BIBLE TREE 2026 1112 · 감사와 기다림 · 연령 띠, 아래쪽에 HEM - 건강한교육사역.', '시안'],
+  ],
+  young: [
+    ['앞표지 그림', '남색 바탕에 마른 가지 끝에 달린 감 하나와 별. 가장 절제된 표지로, 익은 열매(감사)와 별(기다림)만 남겼어요.'],
+    ['글자', '네 권 공통 체계: BIBLE TREE / 2026 / 1112, 블랙한산스. 11은 단풍 주황, 12는 겨울 하늘빛. 연령 띠는 남색 바탕에 묻히지 않게 흰 띠에 남색 글자.'],
+    ['뒤표지', '앞표지 바탕을 이어 깐 면에 문구 “열매를 세던 손으로 별을 기다립니다”. 아래에 BIBLE TREE 2026 · 11–12, 발행 기관, 바이블트리 웹 QR(검정 한 색).'],
+    ['책등', '뒤표지 바탕색 위에 BIBLE TREE 2026 1112 · 감사와 기다림 · 연령 띠, 아래쪽에 HEM - 건강한교육사역.', '시안'],
+  ],
+};
+const ANATOMY = {
+  kids: [
+    ['1면 · 왼쪽 짝수 면', [
+      ['머리 띠', '날짜 상자, 성경 주소, 제목, 이번 주 주제, 오른쪽에 그날 삽화'],
+      ['낱말 풀이 + 성경 본문', '어려운 낱말을 왼쪽 칸에 풀고, 본문에도 같은 낱말을 노란색으로 표시'],
+      ['말씀을 이해해요', '그날 해설. 대부분 1면 안에서 끝나요(저학년 7일, 고학년 1일은 2면 위로 이어짐)'],
+    ]],
+    ['2면 · 오른쪽 홀수 면', [
+      ['날짜 머리글', '오른쪽 위 ‘11. 1 주일’'],
+      ['읽고 발견해요', '질문 3개. O/X, 고르기, 체크, 선 잇기, 순서 맞추기, 따라 쓰기, 쓰는 칸'],
+      ['기도하고 실천해요', '그날 기도문을 둥근 상자에'],
+    ]],
+  ],
+  a5: [
+    ['1면 · 왼쪽 짝수 면', [
+      ['머리', '큰 날짜 숫자, NOV/DEC와 요일, 성경 주소, 제목, 이번 주 주제'],
+      ['오늘의 말씀 + 도움말', '성경 본문과 오른쪽 세로 칸의 낱말·배경 도움말'],
+      ['본문 해설', '그날 해설. 아래쪽에 전날 ‘말씀 보기’ 답 한 줄(11/1은 없음)'],
+    ]],
+    ['2면 · 오른쪽 홀수 면', [
+      ['말씀 보기 (관찰하기)', '본문에서 찾는 질문'],
+      ['말씀 깨닫기 (해석하기)', '뜻을 생각하는 질문'],
+      ['말씀 새기고 살아가기', '삶에 옮기는 질문, 이어서 ‘말씀으로 기도하기’'],
+    ]],
+  ],
+};
+const EXTRAS = [
+  ['1쪽', '속표지'], ['2쪽', '이렇게 읽어요'], ['3쪽', '여는 글'],
+  ['126쪽', '말씀 여행 길(두 달 지도)'], ['127쪽', '두 달 돌아보기'], ['128쪽', '기도 노트 · 판권(발행일·만든 사람 칸은 아직 비어 있음)'],
+];
+const ST = { ok: '확인 완료', fix: '수정 필요', memo: '메모' };
+
+let OFFLINE = null;
+let book = BOOKS[0], idx = 2, notes = [], db = null, user = null, myId = null, thumbFilter = 'all', revFilter = 'all';
+try { const s = localStorage.getItem('bt-book'); if (s && BOOKS.find(b => b.code === s)) book = BOOKS.find(b => b.code === s); } catch (e) {}
+
+const $ = id => document.getElementById(id);
+const el = (tag, attrs = {}, ...kids) => {
+  const n = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs)) {
+    if (k === 'class') n.className = v; else if (k === 'text') n.textContent = v;
+    else if (k.startsWith('on')) n.addEventListener(k.slice(2), v); else if (k === 'style') n.style.cssText = v;
+    else n.setAttribute(k, v);
+  }
+  for (const c of kids) if (c != null) n.append(c);
+  return n;
+};
+const kind = b => b.code === 'teen' ? 'teen' : b.code === 'young' ? 'young' : 'kids';
+const spreadTitle = s => s.date ? `${s.date} (${s.wd}) ${s.title}` : s.label;
+const spreadSub = s => (s.date ? `${s.ref} · ${s.theme} · ` : '') + s.pages.join('–') + '쪽';
+const notesFor = (code, i) => notes.filter(n => n.book === code && n.spread === i);
+function statusOf(code, i) {
+  const ns = notesFor(code, i);
+  return { fix: ns.filter(n => n.st === 'fix').length, ok: ns.filter(n => n.st === 'ok').length, memo: ns.filter(n => n.st === 'memo').length };
+}
+
+function renderBooks() {
+  const box = $('books'); box.replaceChildren();
+  const ov = $('ov'); ov.replaceChildren();
+  for (const b of BOOKS) {
+    const info = BOOK_INFO[b.code];
+    box.append(el('button', { 'aria-pressed': String(b === book), style: `--c:${info.color}`, onclick: () => setBook(b) }, el('i'), b.age, el('small', { text: b.paper })));
+    const days = b.spreads.length;
+    let ok = 0, fix = 0;
+    b.spreads.forEach((s, i) => { const st = statusOf(b.code, i); if (st.fix) fix++; else if (st.ok) ok++; });
+    const meter = el('div', { class: 'meter', 'aria-hidden': 'true' }, el('b', { style: `width:${ok / days * 100}%` }), el('s', { style: `width:${fix / days * 100}%` }));
+    ov.append(el('button', { 'aria-pressed': String(b === book), style: `--c:${info.color}`, onclick: () => setBook(b) },
+      el('span', { class: 't' }, el('i'), `${b.age}`),
+      el('dl', {}, el('dt', { text: '본문' }), el('dd', { text: `${info.size} · 128면` }), el('dt', { text: '작업 크기' }), el('dd', { text: `${info.work}mm` }), el('dt', { text: '표지 펼침' }), el('dd', { text: `${info.coverWork}mm` })),
+      meter,
+      el('span', { class: 'm', text: `확인 ${ok} · 수정 필요 ${fix} · 남은 곳 ${days - ok - fix} / ${days}펼침` })));
+  }
+}
+
+function renderCover() {
+  const info = BOOK_INFO[book.code];
+  $('cv-eye').textContent = `표지 · ${book.age}`;
+  const pic = $('cv-pic'); pic.src = `img/${book.code}/cover.jpg`; pic.alt = `${book.age} 펼침 표지: 뒤표지, 책등, 앞표지`;
+  pic.width = book.cw; pic.height = book.ch;
+  const w = book.paper === 'A4' ? 210 : 148, total = 2 * w + 6.17;
+  const sp = $('cv-spine'); sp.style.left = (w / total * 100) + '%'; sp.style.width = (6.17 / total * 100) + '%';
+  const list = $('cv-notes'); list.replaceChildren();
+  for (const [h, p, tag] of COVER_NOTES[kind(book)]) {
+    list.append(el('div', {}, el('h3', {}, h, tag ? el('span', { class: 'tag', text: '시안 · 확인 필요' }) : null), el('p', { text: p })));
+  }
+  const specs = $('cv-specs'); specs.replaceChildren();
+  for (const [k, v] of [['재단 (펼침)', `${info.cover}mm`], ['작업 (도련 포함)', `${info.coverWork}mm`], ['책등', '6.17mm'], ['도련', '사방 2mm'], ['색', 'CMYK · QR 검정 한 색'], ['그림', '300ppi CMYK']]) {
+    specs.append(el('div', {}, el('span', { text: k }), el('b', { text: v })));
+  }
+}
+
+function renderContents() {
+  const k = book.paper === 'A4' ? 'kids' : 'a5';
+  $('ct-sub').textContent = `${book.age} · ${BOOK_INFO[book.code].size}mm · 하루 2면`;
+  const an = $('ct-anatomy'); an.replaceChildren();
+  for (const [h, items] of ANATOMY[k]) {
+    an.append(el('article', {}, el('h3', {}, h.split(' · ')[0], el('small', { text: h.split(' · ')[1] })), el('ol', {}, ...items.map(([b, s]) => el('li', {}, el('div', {}, el('b', { text: b }), el('span', { text: s })))))));
+  }
+  const ex = $('ct-extras'); ex.replaceChildren();
+  for (const [p, t] of EXTRAS) ex.append(el('div', {}, el('b', { text: p }), el('span', { text: t })));
+}
+
+function renderJump() {
+  const sel = $('v-jump'); sel.replaceChildren();
+  book.spreads.forEach((s, i) => sel.append(el('option', { value: String(i), text: s.date ? `${s.date} ${s.wd} · ${s.title}` : `${s.pages.join('–')}쪽 · ${s.label}` })));
+}
+
+function show(i, scroll) {
+  idx = Math.max(0, Math.min(book.spreads.length - 1, i));
+  const s = book.spreads[idx];
+  const img = $('v-img');
+  img.src = `img/${book.code}/s${String(idx).padStart(2, '0')}.jpg`;
+  img.width = book.pw * 2; img.height = book.ph;
+  img.alt = `${book.age} ${s.pages.join('–')}쪽 펼침면`;
+  $('v-title').textContent = spreadTitle(s);
+  $('v-sub').textContent = spreadSub(s);
+  $('v-jump').value = String(idx);
+  $('v-prev').disabled = idx === 0; $('v-next').disabled = idx === book.spreads.length - 1;
+  $('p-pages').textContent = `${book.age} ${s.pages.join('–')}쪽`;
+  const nx = book.spreads[idx + 1]; if (nx) { const p = new Image(); p.src = `img/${book.code}/s${String(idx + 1).padStart(2, '0')}.jpg`; }
+  renderThread(); markThumbs();
+  if (scroll) $('read').scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+}
+
+async function nameOf(id) {
+  if (!user || !id) return '누군가';
+  try { const ps = await user.profiles([id]); return (ps[id] && ps[id].name) || '누군가'; } catch (e) { return '누군가'; }
+}
+const fmt = t => { const d = new Date(t); return `${d.getMonth() + 1}/${d.getDate()} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`; };
+
+function renderThread() {
+  const box = $('p-thread'); box.replaceChildren();
+  if (OFFLINE) { box.append(OFFLINE()); return; }
+  const ns = notesFor(book.code, idx).sort((a, b) => a.at - b.at);
+  if (!ns.length) box.append(el('p', { class: 'empty', text: db ? '아직 남긴 검수가 없어요. 아래에서 확인 완료나 수정할 점을 남겨 주세요.' : '검수 메모를 불러오는 중이에요. 로그인한 사람만 메모를 보고 남길 수 있어요.' }));
+  for (const n of ns) {
+    const who = el('b', { text: ST[n.st] });
+    const name = el('span', { text: `· ${fmt(n.at)}` });
+    const row = el('div', { class: 'who' }, el('span', {}, who, ' ', name));
+    if (n.by && n.by === myId) row.append(el('button', { type: 'button', text: '지우기', onclick: () => removeNote(n) }));
+    box.append(el('div', { class: `note st-${n.st}` }, row, n.text ? el('p', { text: n.text }) : null));
+    nameOf(n.by).then(nm => { name.textContent = `· ${nm} · ${fmt(n.at)}`; });
+  }
+}
+
+function renderThumbs() {
+  const box = $('thumbs'); box.replaceChildren();
+  const rows = Math.ceil(book.spreads.length / book.cols);
+  book.spreads.forEach((s, i) => {
+    const st = statusOf(book.code, i);
+    if (thumbFilter === 'fix' && !st.fix) return;
+    if (thumbFilter === 'ok' && !(st.ok && !st.fix)) return;
+    if (thumbFilter === 'todo' && (st.ok || st.fix)) return;
+    const col = i % book.cols, row = Math.floor(i / book.cols);
+    const pic = el('span', { class: 'pic', style: `--ar:${book.tw}/${book.th};background-image:url(img/${book.code}/thumbs.jpg);background-size:${book.cols * 100}% ${rows * 100}%;background-position:${col / (book.cols - 1) * 100}% ${rows > 1 ? row / (rows - 1) * 100 : 0}%` });
+    const marks = el('span', { class: 'marks' });
+    if (st.fix) marks.append(el('i', { class: 'f', text: `수정 ${st.fix}` }));
+    else if (st.ok) marks.append(el('i', { class: 'o', text: '✓' }));
+    if (st.memo) marks.append(el('i', { class: 'n', text: `메모 ${st.memo}` }));
+    box.append(el('button', { class: 'thumb', 'data-i': String(i), 'aria-current': String(i === idx), 'aria-label': `${spreadTitle(s)}, ${s.pages.join('–')}쪽`, onclick: () => show(i, true) },
+      pic, marks, el('span', { class: 'cap' }, el('b', { text: s.date || s.pages.join('–') }), el('span', { text: s.date ? s.title : s.label }))));
+  });
+  if (!box.children.length) box.append(el('p', { class: 'empty', text: '이 조건에 맞는 펼침이 없어요.' }));
+  const all = book.spreads.length;
+  document.querySelector('#t-filters [data-f="all"]').textContent = `전체 ${all}`;
+}
+function markThumbs() { document.querySelectorAll('#thumbs .thumb').forEach(t => t.setAttribute('aria-current', String(Number(t.dataset.i) === idx))); }
+
+function renderReview() {
+  const out = $('r-out'); out.replaceChildren();
+  if (OFFLINE) { out.append(OFFLINE()); return; }
+  if (!db) { out.append(el('p', { class: 'signin', text: '검수 메모는 로그인한 사람에게만 보여요. claude.ai에 로그인해서 이 페이지를 열어 주세요.' })); return; }
+  let ns = notes.slice().sort((a, b) => b.at - a.at);
+  if (revFilter === 'book') ns = ns.filter(n => n.book === book.code);
+  else if (revFilter !== 'all') ns = ns.filter(n => n.st === revFilter);
+  if (!ns.length) { out.append(el('p', { class: 'signin', text: '아직 남긴 메모가 없어요. 열람에서 펼침을 보고 오른쪽 칸에 남기면 여기에 모여요.' })); return; }
+  const tb = el('tbody');
+  for (const n of ns) {
+    const b = BOOKS.find(x => x.code === n.book); if (!b) continue;
+    const s = b.spreads[n.spread]; if (!s) continue;
+    const who = el('td', { text: '…' }); nameOf(n.by).then(nm => who.textContent = nm);
+    tb.append(el('tr', {},
+      el('td', { class: 'go' }, el('button', { type: 'button', text: `${b.age} ${s.date || s.pages.join('–') + '쪽'}`, onclick: () => { setBook(b, n.spread); } })),
+      el('td', {}, el('span', { class: `pill st-${n.st}`, text: ST[n.st] })),
+      el('td', { class: 'txt', text: n.text || '—' }),
+      who,
+      el('td', { class: 'num', text: fmt(n.at) })));
+  }
+  out.append(el('div', { class: 'table-wrap' }, el('table', {}, el('thead', {}, el('tr', {}, ...['펼침', '상태', '내용', '남긴 사람', '시각'].map(t => el('th', { text: t })))), tb)));
+}
+
+function setBook(b, i) {
+  book = b; try { localStorage.setItem('bt-book', b.code); } catch (e) {}
+  document.body.dataset.book = b.code;
+  renderBooks(); renderCover(); renderContents(); renderJump(); renderThumbs();
+  show(i == null ? 2 : i, i != null);
+  renderReview();
+}
+
+async function removeNote(n) {
+  if (!db) return;
+  try { await db.collection('notes').doc(n.id).delete(); } catch (e) { $('p-hint').textContent = '지우지 못했어요. 다시 눌러 주세요.'; }
+}
+
+$('p-form').addEventListener('submit', async e => {
+  e.preventDefault();
+  if (!db) { $('p-hint').textContent = '로그인해야 남길 수 있어요.'; return; }
+  const st = document.querySelector('input[name="st"]:checked').value;
+  const text = $('p-text').value.trim();
+  if (st !== 'ok' && !text) { $('p-hint').textContent = '수정할 점이나 메모 내용을 적어 주세요.'; $('p-text').focus(); return; }
+  $('p-send').disabled = true;
+  try {
+    await db.collection('notes').add({ book: book.code, spread: idx, st, text: text.slice(0, 2000), by: myId || '', at: Date.now() });
+    $('p-text').value = ''; $('p-hint').textContent = '남겼어요.';
+  } catch (err) {
+    $('p-hint').textContent = err && (err.code === 'permission_denied' || err.code === 'not_granted') ? '이 페이지에 쓸 권한이 없어요. 공유한 사람에게 편집 권한을 받아 주세요.' : '남기지 못했어요. 잠시 뒤 다시 눌러 주세요.';
+  } finally { $('p-send').disabled = false; }
+});
+document.querySelectorAll('input[name="st"]').forEach(r => r.addEventListener('change', () => { $('p-hint').textContent = r.value === 'ok' ? '확인 완료는 내용 없이 남겨도 돼요' : '무엇을 고칠지 적어 주세요'; }));
+
+$('v-prev').onclick = () => show(idx - 1);
+$('v-next').onclick = () => show(idx + 1);
+$('v-jump').onchange = e => show(Number(e.target.value));
+$('v-img').onclick = () => $('v-scroll').classList.toggle('zoom');
+document.addEventListener('keydown', e => {
+  if (e.target.closest('textarea, input, select')) return;
+  if (e.key === 'ArrowLeft') { show(idx - 1); e.preventDefault(); }
+  if (e.key === 'ArrowRight') { show(idx + 1); e.preventDefault(); }
+});
+$('t-filters').addEventListener('click', e => { const b = e.target.closest('[data-f]'); if (!b) return; thumbFilter = b.dataset.f; document.querySelectorAll('#t-filters .chip').forEach(c => c.setAttribute('aria-pressed', String(c === b))); renderThumbs(); });
+$('r-filters').addEventListener('click', e => { const b = e.target.closest('[data-r]'); if (!b) return; revFilter = b.dataset.r; document.querySelectorAll('#r-filters .chip').forEach(c => c.setAttribute('aria-pressed', String(c === b))); renderReview(); });
+
+setBook(book);
+
+(async () => {
+  if (!window.claude || !window.claude.use) {
+    // claude.ai 밖(GitHub Pages 등): 열람만. 메모는 claude.ai 검수 페이지에서
+    $('p-form').hidden = true;
+    const msg = () => el('p', { class: 'signin' }, '검수 메모는 claude.ai 검수 페이지에서 남기고 볼 수 있어요: ', el('a', { href: 'https://claude.ai/artifact/6FGXYRVzH6aR7u2KJjLeqD', target: '_blank', rel: 'noopener', text: '검수 페이지 열기' }));
+        $('p-thread').replaceChildren(msg()); $('r-out').replaceChildren(msg());
+    OFFLINE = msg;
+    return;
+  }
+  try { user = await window.claude.use('user'); if (user) myId = await user.id(); } catch (e) {}
+  try { db = await window.claude.use('db'); } catch (e) { db = null; }
+  if (!db) { renderThread(); renderReview(); return; }
+  db.collection('notes').orderBy('at', 'asc').limit(1000).onSnapshot(snap => {
+    notes = snap.docs.map(d => ({ id: d.id, ...d.data() })).filter(n => n && typeof n.book === 'string' && typeof n.spread === 'number' && ST[n.st]);
+    renderBooks(); renderThread(); renderThumbs(); renderReview();
+  }, () => { renderReview(); });
+  renderThread(); renderReview();
+})();
+</script>
+
+</body>
+</html>
