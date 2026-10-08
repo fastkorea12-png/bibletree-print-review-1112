@@ -169,6 +169,7 @@ form.add { border-top: 1px solid var(--line); padding: 12px 14px; display: grid;
 .seg input { position: absolute; opacity: 0; pointer-events: none; }
 .seg label:has(input:checked) { background: color-mix(in oklab, var(--st) 16%, var(--surface)); color: var(--st); font-weight: 700; }
 .seg label:has(input:focus-visible) { outline: 2px solid var(--age-text); outline-offset: -2px; }
+form.add input[type=text] { padding: 8px 10px; border-radius: 8px; border: 1px solid var(--line); background: var(--bg); }
 form.add textarea { resize: vertical; min-height: 64px; padding: 8px 10px; border-radius: 8px; border: 1px solid var(--line); background: var(--bg); }
 form.add .row { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
 .hint { font-size: 12px; color: var(--muted); }
@@ -280,6 +281,7 @@ td.txt { white-space: pre-wrap; overflow-wrap: anywhere; min-width: 220px; }
             <label class="st-fix"><input type="radio" name="st" id="st-fix" value="fix">수정 필요</label>
             <label class="st-memo"><input type="radio" name="st" id="st-memo" value="memo">메모</label>
           </div>
+          <input id="p-name" type="text" maxlength="40" autocomplete="name" placeholder="이름 (예: 김바울 목사)" aria-label="이름">
           <textarea id="p-text" placeholder="예: 2면 질문 2 보기 ③ 줄바꿈 어색함" aria-label="메모 내용"></textarea>
           <div class="row"><span class="hint" id="p-hint">확인 완료는 내용 없이 남겨도 돼요</span><button class="btn primary" id="p-send" type="submit">남기기</button></div>
         </form>
@@ -368,8 +370,18 @@ const EXTRAS = [
 ];
 const ST = { ok: '확인 완료', fix: '수정 필요', memo: '메모' };
 
-let OFFLINE = null;
-let book = BOOKS[0], idx = 2, notes = [], db = null, user = null, myId = null, thumbFilter = 'all', revFilter = 'all';
+// 검수 기록은 구글 시트(Apps Script 웹 앱)에 모은다. claude.ai 안에서는 외부 주소에 쓸 수 없어 GitHub 주소로 안내한다.
+const SHEET_URL = 'https://script.google.com/macros/s/AKfycbzRtcsJL7GkVG7dK6JGqEIUq_-eM5AD8zHFJL3atupBD0kxJjvFxaB_Ljl08AYvNL_S/exec';
+const PUBLIC_URL = 'https://fastkorea12-png.github.io/bibletree-print-review-1112/';
+let OFFLINE = null, loaded = false;
+let book = BOOKS[0], idx = 2, notes = [], thumbFilter = 'all', revFilter = 'all';
+const store = {
+  get(k, d) { try { const v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } },
+  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} },
+};
+let token = store.get('bt-token', '');
+if (!token) { token = Math.random().toString(36).slice(2) + Date.now().toString(36); store.set('bt-token', token); }
+const mine = new Set(store.get('bt-mine', []));
 try { const s = localStorage.getItem('bt-book'); if (s && BOOKS.find(b => b.code === s)) book = BOOKS.find(b => b.code === s); } catch (e) {}
 
 const $ = id => document.getElementById(id);
@@ -460,24 +472,20 @@ function show(i, scroll) {
   if (scroll) $('read').scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
 }
 
-async function nameOf(id) {
-  if (!user || !id) return '누군가';
-  try { const ps = await user.profiles([id]); return (ps[id] && ps[id].name) || '누군가'; } catch (e) { return '누군가'; }
-}
+const nameOf = n => (n.name || '').trim() || '이름 없음';
 const fmt = t => { const d = new Date(t); return `${d.getMonth() + 1}/${d.getDate()} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`; };
 
 function renderThread() {
   const box = $('p-thread'); box.replaceChildren();
   if (OFFLINE) { box.append(OFFLINE()); return; }
   const ns = notesFor(book.code, idx).sort((a, b) => a.at - b.at);
-  if (!ns.length) box.append(el('p', { class: 'empty', text: db ? '아직 남긴 검수가 없어요. 아래에서 확인 완료나 수정할 점을 남겨 주세요.' : '검수 메모를 불러오는 중이에요. 로그인한 사람만 메모를 보고 남길 수 있어요.' }));
+  if (!ns.length) box.append(el('p', { class: 'empty', text: loaded ? '아직 남긴 검수가 없어요. 아래에 이름을 적고 확인 완료나 수정할 점을 남겨 주세요.' : '검수 기록을 불러오는 중이에요.' }));
   for (const n of ns) {
     const who = el('b', { text: ST[n.st] });
-    const name = el('span', { text: `· ${fmt(n.at)}` });
+    const name = el('span', { text: `· ${nameOf(n)} · ${fmt(n.at)}` });
     const row = el('div', { class: 'who' }, el('span', {}, who, ' ', name));
-    if (n.by && n.by === myId) row.append(el('button', { type: 'button', text: '지우기', onclick: () => removeNote(n) }));
+    if (mine.has(n.id)) row.append(el('button', { type: 'button', text: '지우기', onclick: () => removeNote(n) }));
     box.append(el('div', { class: `note st-${n.st}` }, row, n.text ? el('p', { text: n.text }) : null));
-    nameOf(n.by).then(nm => { name.textContent = `· ${nm} · ${fmt(n.at)}`; });
   }
 }
 
@@ -507,7 +515,7 @@ function markThumbs() { document.querySelectorAll('#thumbs .thumb').forEach(t =>
 function renderReview() {
   const out = $('r-out'); out.replaceChildren();
   if (OFFLINE) { out.append(OFFLINE()); return; }
-  if (!db) { out.append(el('p', { class: 'signin', text: '검수 메모는 로그인한 사람에게만 보여요. claude.ai에 로그인해서 이 페이지를 열어 주세요.' })); return; }
+  if (!loaded) { out.append(el('p', { class: 'signin', text: '검수 기록을 불러오는 중이에요.' })); return; }
   let ns = notes.slice().sort((a, b) => b.at - a.at);
   if (revFilter === 'book') ns = ns.filter(n => n.book === book.code);
   else if (revFilter !== 'all') ns = ns.filter(n => n.st === revFilter);
@@ -516,7 +524,7 @@ function renderReview() {
   for (const n of ns) {
     const b = BOOKS.find(x => x.code === n.book); if (!b) continue;
     const s = b.spreads[n.spread]; if (!s) continue;
-    const who = el('td', { text: '…' }); nameOf(n.by).then(nm => who.textContent = nm);
+    const who = el('td', { text: nameOf(n) });
     tb.append(el('tr', {},
       el('td', { class: 'go' }, el('button', { type: 'button', text: `${b.age} ${s.date || s.pages.join('–') + '쪽'}`, onclick: () => { setBook(b, n.spread); } })),
       el('td', {}, el('span', { class: `pill st-${n.st}`, text: ST[n.st] })),
@@ -535,23 +543,44 @@ function setBook(b, i) {
   renderReview();
 }
 
+function takeNotes(list) {
+  notes = (Array.isArray(list) ? list : []).map(n => ({ id: String(n.id), at: Number(n.at), name: String(n.name || ''), book: String(n.book), spread: Number(n.spread), st: String(n.st), text: String(n.text || '') }))
+    .filter(n => BOOKS.some(b => b.code === n.book) && Number.isInteger(n.spread) && ST[n.st]);
+  loaded = true;
+  renderBooks(); renderThread(); renderThumbs(); renderReview();
+}
+async function call(body) {
+  const r = await fetch(SHEET_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(body) });
+  const j = await r.json();
+  if (!j.ok) throw new Error(j.error || 'failed');
+  takeNotes(j.notes);
+  return j;
+}
+async function load() {
+  try { const r = await fetch(SHEET_URL + '?t=' + Date.now()); const j = await r.json(); if (j.ok) takeNotes(j.notes); }
+  catch (e) { if (!loaded) { $('p-hint').textContent = '검수 기록을 불러오지 못했어요. 잠시 뒤 새로고침해 주세요.'; } }
+}
 async function removeNote(n) {
-  if (!db) return;
-  try { await db.collection('notes').doc(n.id).delete(); } catch (e) { $('p-hint').textContent = '지우지 못했어요. 다시 눌러 주세요.'; }
+  try { await call({ action: 'delete', id: n.id, token }); mine.delete(n.id); store.set('bt-mine', [...mine]); }
+  catch (e) { $('p-hint').textContent = '지우지 못했어요. 다시 눌러 주세요.'; }
 }
 
 $('p-form').addEventListener('submit', async e => {
   e.preventDefault();
-  if (!db) { $('p-hint').textContent = '로그인해야 남길 수 있어요.'; return; }
+  if (OFFLINE) return;
+  const nm = $('p-name').value.trim();
+  if (!nm) { $('p-hint').textContent = '이름을 적어 주세요.'; $('p-name').focus(); return; }
+  store.set('bt-name', nm);
   const st = document.querySelector('input[name="st"]:checked').value;
   const text = $('p-text').value.trim();
   if (st !== 'ok' && !text) { $('p-hint').textContent = '수정할 점이나 메모 내용을 적어 주세요.'; $('p-text').focus(); return; }
   $('p-send').disabled = true;
   try {
-    await db.collection('notes').add({ book: book.code, spread: idx, st, text: text.slice(0, 2000), by: myId || '', at: Date.now() });
+    const j = await call({ action: 'add', name: nm.slice(0, 40), book: book.code, spread: idx, st, text: text.slice(0, 2000), token });
+    if (j.id) { mine.add(String(j.id)); store.set('bt-mine', [...mine]); renderThread(); }
     $('p-text').value = ''; $('p-hint').textContent = '남겼어요.';
   } catch (err) {
-    $('p-hint').textContent = err && (err.code === 'permission_denied' || err.code === 'not_granted') ? '이 페이지에 쓸 권한이 없어요. 공유한 사람에게 편집 권한을 받아 주세요.' : '남기지 못했어요. 잠시 뒤 다시 눌러 주세요.';
+    $('p-hint').textContent = '남기지 못했어요. 인터넷 연결을 확인하고 다시 눌러 주세요.';
   } finally { $('p-send').disabled = false; }
 });
 document.querySelectorAll('input[name="st"]').forEach(r => r.addEventListener('change', () => { $('p-hint').textContent = r.value === 'ok' ? '확인 완료는 내용 없이 남겨도 돼요' : '무엇을 고칠지 적어 주세요'; }));
@@ -570,24 +599,17 @@ $('r-filters').addEventListener('click', e => { const b = e.target.closest('[dat
 
 setBook(book);
 
-(async () => {
-  if (!window.claude || !window.claude.use) {
-    // claude.ai 밖(GitHub Pages 등): 열람만. 메모는 claude.ai 검수 페이지에서
-    $('p-form').hidden = true;
-    const msg = () => el('p', { class: 'signin' }, '검수 메모는 claude.ai 검수 페이지에서 남기고 볼 수 있어요: ', el('a', { href: 'https://claude.ai/artifact/6FGXYRVzH6aR7u2KJjLeqD', target: '_blank', rel: 'noopener', text: '검수 페이지 열기' }));
-        $('p-thread').replaceChildren(msg()); $('r-out').replaceChildren(msg());
-    OFFLINE = msg;
-    return;
-  }
-  try { user = await window.claude.use('user'); if (user) myId = await user.id(); } catch (e) {}
-  try { db = await window.claude.use('db'); } catch (e) { db = null; }
-  if (!db) { renderThread(); renderReview(); return; }
-  db.collection('notes').orderBy('at', 'asc').limit(1000).onSnapshot(snap => {
-    notes = snap.docs.map(d => ({ id: d.id, ...d.data() })).filter(n => n && typeof n.book === 'string' && typeof n.spread === 'number' && ST[n.st]);
-    renderBooks(); renderThread(); renderThumbs(); renderReview();
-  }, () => { renderReview(); });
+$('p-name').value = store.get('bt-name', '');
+if ((window.claude && window.claude.use) || !SHEET_URL.startsWith('https://')) {
+  // claude.ai 안이거나 시트 주소가 아직 없으면: 열람만, 기록은 공개 주소에서
+  $('p-form').hidden = true;
+  OFFLINE = () => el('p', { class: 'signin' }, '검수 기록은 공개 검수 페이지에서 이름만 적고 남길 수 있어요: ', el('a', { href: PUBLIC_URL, target: '_blank', rel: 'noopener', text: '검수 페이지 열기' }));
   renderThread(); renderReview();
-})();
+} else {
+  load();
+  setInterval(() => { if (document.visibilityState === 'visible') load(); }, 30000);
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') load(); });
+}
 </script>
 
 </body>
