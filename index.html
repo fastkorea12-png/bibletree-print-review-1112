@@ -133,8 +133,9 @@ section { display: grid; grid-template-columns: minmax(0, 1fr); gap: 20px; scrol
 .extras b { font-family: var(--mono); font-weight: 500; font-size: 12px; color: var(--muted); }
 
 /* viewer */
-.viewer { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 16px; align-items: start; }
-.stage { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; display: grid; }
+/* 펼침은 내용 폭 전체, 검수 칸은 그 아래. 그림 높이는 화면 안에 들어오게(위 띠 + 펼침 머리 + 확인 띠를 뺀 만큼) */
+.viewer { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; align-items: start; }
+.stage { scroll-margin-top: calc(var(--barh, 60px) + 8px); background: var(--surface); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; display: grid; }
 .stage-top { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; padding: 10px 12px; border-bottom: 1px solid var(--line); }
 .stage-top .meta { display: grid; min-width: 0; margin-right: auto; }
 .stage-top .meta b { font-size: 16px; }
@@ -145,18 +146,24 @@ section { display: grid; grid-template-columns: minmax(0, 1fr); gap: 20px; scrol
 .btn:disabled { opacity: 0.4; cursor: default; }
 .btn.primary { background: var(--ink); color: var(--bg); border-color: var(--ink); }
 .btn.primary:hover { background: color-mix(in oklab, var(--ink) 85%, var(--bg)); }
-.scroller { overflow: auto; background: var(--sunk); max-height: 78vh; position: relative; }
-.scroller img { display: block; width: 100%; height: auto; margin: 0 auto; background: #fff; cursor: zoom-in; }
-.scroller.zoom img { width: 200%; max-width: none; cursor: zoom-out; }
-.stage-foot { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 8px 12px; border-top: 1px solid var(--line); font-size: 12.5px; color: var(--muted); }
+.scroller { overflow: auto; background: var(--sunk); position: relative; }
+.scroller img { display: block; width: auto; height: auto; max-width: 100%; max-height: max(320px, calc(100vh - var(--barh, 60px) - 150px)); max-height: max(320px, calc(100svh - var(--barh, 60px) - 150px)); margin: 0 auto; background: #fff; cursor: zoom-in; }
+.scroller.zoom { max-height: calc(100svh - var(--barh, 60px) - 150px); }
+.scroller.zoom img { width: 200%; max-width: none; max-height: none; cursor: zoom-out; }
+/* 그림 바로 아래 확인 띠 */
+.qbar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; padding: 8px 12px; border-top: 1px solid var(--line); }
+.qhelp { margin-left: auto; font-size: 12.5px; color: var(--muted); }
 .kbd { font-family: var(--mono); font-size: 11px; border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 4px; padding: 0 5px; }
 
-.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; display: grid; gap: 0; position: sticky; top: 120px; max-height: calc(100vh - 140px); overflow: hidden; grid-template-rows: auto auto minmax(0, 1fr) auto; }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; display: grid; gap: 0; overflow: hidden; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: start; }
+.panel header { grid-column: 1 / -1; }
+.panel form.add { border-top: 0; border-left: 1px solid var(--line); align-self: stretch; align-content: start; }
 /* 한 번 눌러 확인 */
-.confirm { padding: 12px 14px; border-bottom: 1px solid var(--line); display: grid; gap: 6px; }
-.btn.ok { min-height: 46px; background: var(--ok); border-color: var(--ok); color: var(--surface); font-weight: 700; font-size: 15.5px; }
+.confirm { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px; min-width: 0; }
+.confirm .hint { font-size: 12.5px; }
+.btn.ok { min-height: 42px; padding: 0 20px; background: var(--ok); border-color: var(--ok); color: var(--surface); font-weight: 700; font-size: 15.5px; }
 .btn.ok:hover { background: color-mix(in oklab, var(--ok) 86%, var(--ink)); }
-.done { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 46px; padding: 6px 12px; border-radius: 8px; background: color-mix(in oklab, var(--ok) 14%, var(--surface)); color: var(--ok); font-weight: 700; }
+.done { display: flex; align-items: center; justify-content: space-between; gap: 14px; min-height: 42px; padding: 6px 12px; border-radius: 8px; background: color-mix(in oklab, var(--ok) 14%, var(--surface)); color: var(--ok); font-weight: 700; }
 .done span { min-width: 0; overflow-wrap: anywhere; }
 .confirm .others { font-size: 12.5px; color: var(--muted); overflow-wrap: anywhere; }
 .linkbtn { border: 0; background: none; padding: 4px 0; color: var(--muted); text-decoration: underline; cursor: pointer; font-size: 13px; font-weight: 500; white-space: nowrap; }
@@ -254,8 +261,8 @@ td.txt { white-space: pre-wrap; overflow-wrap: anywhere; min-width: 220px; }
 .signin { padding: 14px 16px; border-radius: 10px; background: var(--sunk); color: var(--muted); font-size: 14px; }
 
 @media (max-width: 980px) {
-  .viewer { grid-template-columns: minmax(0, 1fr); }
-  .panel { position: static; max-height: none; }
+  .panel { grid-template-columns: minmax(0, 1fr); }
+  .panel form.add { border-left: 0; border-top: 1px solid var(--line); }
   .cover { grid-template-columns: minmax(0, 1fr); }
   .ov { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
@@ -264,7 +271,8 @@ td.txt { white-space: pre-wrap; overflow-wrap: anywhere; min-width: 220px; }
   .anatomy { grid-template-columns: minmax(0, 1fr); }
   .ov { grid-template-columns: minmax(0, 1fr); }
   .brand span { display: none; }
-  .scroller { max-height: none; }
+  .scroller img { max-height: none; }
+  .qhelp { display: none; }
   h2 { font-size: 22px; }
 }
 @media (prefers-reduced-motion: no-preference) {
@@ -346,11 +354,10 @@ td.txt { white-space: pre-wrap; overflow-wrap: anywhere; min-width: 220px; }
           <button class="btn" id="v-cmp" type="button" aria-haspopup="dialog">4권 같이 보기</button>
         </div>
         <div class="scroller" id="v-scroll"><img id="v-img" alt="" width="1522" height="1076"></div>
-        <div class="stage-foot"><span>그림을 누르면 2배로 커져요</span><span class="kbd-hint"><span class="kbd">←</span> <span class="kbd">→</span> 넘기기 · <span class="kbd">Enter</span> 확인하고 다음</span></div>
+        <div class="qbar"><div class="confirm" id="p-confirm"></div><span class="qhelp">그림을 누르면 2배로 커져요<span class="kbd-hint"> · <span class="kbd">←</span> <span class="kbd">→</span> 넘기기</span></span></div>
       </div>
       <aside class="panel" aria-labelledby="p-h">
-        <header><h3 id="p-h">이 펼침 검수</h3><span id="p-pages"></span></header>
-        <div class="confirm" id="p-confirm"></div>
+        <header><h3 id="p-h">이 펼침 검수 · 수정 필요 / 메모</h3><span id="p-pages"></span></header>
         <div class="thread" id="p-thread"></div>
         <form class="add" id="p-form">
           <div class="seg" role="radiogroup" aria-label="상태">
@@ -551,7 +558,7 @@ function show(i, scroll) {
   $('p-pages').textContent = `${book.age} ${s.pages.join('–')}쪽`;
   const nx = book.spreads[idx + 1]; if (nx) { const p = new Image(); p.src = `img/${book.code}/s${String(idx + 1).padStart(2, '0')}.jpg`; }
   renderThread(); renderConfirm(); markThumbs(); if (!$('cmp').hidden) renderCmp();
-  if (scroll) $('read').scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+  if (scroll) document.querySelector('#read .stage').scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
 }
 
 const nameOf = n => (n.name || '').trim() || '이름 없음';
@@ -580,7 +587,7 @@ function renderConfirm() {
   else if (my.length) {
     const done = el('div', { class: 'done' }, el('span', { text: `✓ 확인함 (${nameOf(my[0])})` }));
     if (my.some(n => mine.has(n.id))) done.append(el('button', { type: 'button', class: 'linkbtn', text: '되돌리기', onclick: () => undoConfirm(code, i) }));
-    box.append(done);
+    box.append(done, el('span', { class: 'hint kbd-hint' }, el('span', { class: 'kbd', text: 'Enter' }), ' 다음 펼침으로'));
   } else {
     const b = el('button', { type: 'button', class: 'btn ok', text: loaded ? '✓ 확인 완료' : '불러오는 중…', onclick: () => confirmSpread(code, i) });
     if (!loaded) b.disabled = true;
@@ -794,6 +801,11 @@ document.addEventListener('keydown', e => {
 });
 $('t-filters').addEventListener('click', e => { const b = e.target.closest('[data-f]'); if (!b) return; thumbFilter = b.dataset.f; document.querySelectorAll('#t-filters .chip').forEach(c => c.setAttribute('aria-pressed', String(c === b))); renderThumbs(); });
 $('r-filters').addEventListener('click', e => { const b = e.target.closest('[data-r]'); if (!b) return; revFilter = b.dataset.r; document.querySelectorAll('#r-filters .chip').forEach(c => c.setAttribute('aria-pressed', String(c === b))); renderReview(); });
+
+// 위 띠 높이 → 그림 최대 높이 계산에 씀
+function syncBar() { document.documentElement.style.setProperty('--barh', document.querySelector('.bar').offsetHeight + 'px'); }
+syncBar(); addEventListener('resize', syncBar);
+if (window.ResizeObserver) new ResizeObserver(syncBar).observe(document.querySelector('.bar'));
 
 function renderMe() { $('me').hidden = VIEW_ONLY || !myName; $('me-name').textContent = myName; }
 function openGate() {
