@@ -186,14 +186,14 @@ body.gated, body.locked { overflow: hidden; }
 @media (hover: none) { .kbd-hint { display: none; } }
 /* 4권 같이 보기 */
 .cmp { position: fixed; inset: 0; z-index: 80; background: var(--bg); overflow: auto; overscroll-behavior: contain; }
+.cmp:focus { outline: none; }
 .cmp-top { position: sticky; top: 0; z-index: 1; background: color-mix(in oklab, var(--bg) 90%, transparent); backdrop-filter: blur(10px); border-bottom: 1px solid var(--line); padding-top: env(safe-area-inset-top, 0px); }
 .cmp-top .wrap { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; padding-block: 10px; }
 .cmp-top .meta { display: grid; min-width: 0; margin-right: auto; }
 .cmp-top .meta b { font: 400 20px/1.2 var(--display); letter-spacing: 0.01em; }
 .cmp-top .meta span { color: var(--muted); font-size: 13px; }
 .cmp-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; padding-block: 16px 40px; }
-.cmp-card { display: grid; gap: 0; padding: 0; text-align: left; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); overflow: hidden; cursor: pointer; }
-.cmp-card:hover { border-color: var(--c); }
+.cmp-card { display: grid; gap: 0; align-content: start; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); overflow: hidden; min-width: 0; }
 .cmp-card[aria-current="true"] { border-color: var(--c); box-shadow: inset 0 0 0 1px var(--c); }
 .cmp-head { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; padding: 10px 12px; border-bottom: 1px solid var(--line); }
 .cmp-head .bk { display: inline-flex; align-items: center; gap: 7px; font-weight: 700; }
@@ -201,8 +201,21 @@ body.gated, body.locked { overflow: hidden; }
 .cmp-head .tt { color: var(--muted); font-size: 13px; min-width: 0; flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .cmp-st { font-size: 12px; font-weight: 700; padding: 2px 8px; border-radius: 999px; color: var(--st); background: color-mix(in oklab, var(--st) 14%, transparent); max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .cmp-st.todo { --st: var(--muted); }
+.cmp-open { display: block; width: 100%; padding: 0; border: 0; background: none; cursor: pointer; }
+.cmp-open:hover img { outline: 2px solid var(--c); outline-offset: -2px; }
 .cmp-card img { display: block; width: 100%; height: auto; background: #fff; }
-.cmp-card .go { padding: 8px 12px; font-size: 12.5px; color: var(--muted); border-top: 1px solid var(--line); }
+/* 그림 아래 얇은 조작 띠 */
+.cmp-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; padding: 8px 10px; border-top: 1px solid var(--line); }
+.cmp-bar .btn { min-height: 34px; padding: 0 12px; font-size: 13.5px; }
+.cmp-bar .btn.ok { min-height: 34px; padding: 0 14px; font-size: 14px; }
+.cmp-bar .done { min-height: 34px; padding: 2px 10px; font-size: 13.5px; gap: 10px; }
+.cmp-bar .btn[aria-expanded="true"] { background: var(--sunk); }
+.cmp-bar .open { margin-left: auto; }
+.cmp-more { display: grid; gap: 8px; padding: 10px 12px 12px; border-top: 1px solid var(--line); background: color-mix(in oklab, var(--sunk) 45%, var(--surface)); }
+.cmp-more .note { background: var(--surface); }
+.cmp-more form { display: grid; gap: 8px; }
+.cmp-more textarea { resize: vertical; min-height: 60px; padding: 8px 10px; border-radius: 8px; border: 1px solid var(--line); background: var(--bg); }
+.cmp-more .row { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
 @media (max-width: 760px) { .cmp-grid { grid-template-columns: minmax(0, 1fr); } }
 .toast { position: fixed; left: 50%; bottom: calc(16px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); z-index: 90; max-width: calc(100% - 32px); padding: 10px 16px; border-radius: 10px; background: var(--ink); color: var(--bg); font-size: 14px; box-shadow: var(--shadow); }
 .panel header { padding: 12px 14px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; align-items: center; gap: 8px; }
@@ -295,9 +308,10 @@ td.txt { white-space: pre-wrap; overflow-wrap: anywhere; min-width: 220px; }
   </form>
 </div>
 <p class="toast" id="toast" role="status" hidden></p>
-<div class="cmp" id="cmp" role="dialog" aria-modal="true" aria-labelledby="cmp-h" hidden>
+<div class="cmp" id="cmp" role="dialog" aria-modal="true" aria-labelledby="cmp-h" tabindex="-1" hidden>
   <div class="cmp-top"><div class="wrap">
-    <div class="meta"><b id="cmp-h"></b><span>네 권의 같은 날 펼침 · 누르면 그 책 열람으로 가요</span></div>
+    <div class="meta"><b id="cmp-h"></b><span>네 권의 같은 날 펼침 · 그림을 누르면 그 책 열람으로 가요<span class="kbd-hint"> · <span class="kbd">Enter</span> 네 권 확인하고 다음 날</span></span></div>
+    <button class="btn ok" id="cmp-all" type="button">✓ 4권 모두 확인</button>
     <button class="btn" id="cmp-prev" type="button" aria-label="이전 날">‹ 이전</button>
     <button class="btn" id="cmp-next" type="button" aria-label="다음 날">다음 ›</button>
     <button class="btn primary" id="cmp-close" type="button">닫기</button>
@@ -613,42 +627,141 @@ function matchIdx(b) {
   if (s.date) { const j = b.spreads.findIndex(x => x.date === s.date); if (j >= 0) return j; }
   return idx < b.spreads.length ? idx : -1;
 }
+const cmpOpenNotes = new Set();   // 수정·메모 칸을 펼친 책+펼침
+const cmpDraft = {};               // 쓰다 만 글: { 'low:2': { st, text } }
+const cmpTargets = () => BOOKS.map(b => [b.code, matchIdx(b)]).filter(([, j]) => j >= 0);
 function renderCmp() {
   const s = book.spreads[idx];
   $('cmp-h').textContent = s.date ? `${s.date} (${s.wd}) 네 권 같이 보기` : `${s.pages.join('–')}쪽 · ${s.label}`;
   $('cmp-prev').disabled = idx === 0; $('cmp-next').disabled = idx === book.spreads.length - 1;
+  const targets = cmpTargets();
+  const left = targets.filter(([c, j]) => !okNotes(c, j).some(isMe)).length;
+  const all = $('cmp-all');
+  all.hidden = !!OFFLINE;
+  all.disabled = !loaded || !left || targets.some(([c, j]) => busy.has(`${c}:${j}`));
+  all.textContent = !loaded ? '불러오는 중…' : left ? `✓ ${left === targets.length ? '4권 모두' : `남은 ${left}권`} 확인` : '✓ 4권 모두 확인함';
+  // 다시 그려도 쓰던 칸의 포커스와 커서를 지킨다
+  const act = document.activeElement, keepId = act && act.closest && act.closest('#cmp') && act.id ? act.id : null;
+  const caret = keepId && act.tagName === 'TEXTAREA' ? [act.selectionStart, act.selectionEnd] : null;
   const grid = $('cmp-grid'); grid.replaceChildren();
   for (const b of BOOKS) {
     const j = matchIdx(b); if (j < 0) continue;
-    const t = b.spreads[j], st = statusOf(b.code, j), names = uniq(okNotes(b.code, j).map(nameOf));
+    const t = b.spreads[j], key = `${b.code}:${j}`, st = statusOf(b.code, j), oks = okNotes(b.code, j), names = uniq(oks.map(nameOf));
     let pill;
     if (OFFLINE) pill = null;
     else if (st.fix) pill = el('span', { class: 'cmp-st st-fix', text: `수정 필요 ${st.fix}` });
     else if (names.length) pill = el('span', { class: 'cmp-st st-ok', text: `✓ ${names.join(', ')}`, title: `확인: ${names.join(', ')}` });
     else pill = el('span', { class: 'cmp-st todo', text: loaded ? '아직 확인 전' : '불러오는 중' });
+    const open = () => { closeCmp(false); setBook(b, j); };
     const img = el('img', { src: `img/${b.code}/s${String(j).padStart(2, '0')}.jpg`, alt: `${b.age} ${t.pages.join('–')}쪽 펼침면`, width: String(b.pw * 2), height: String(b.ph), loading: 'lazy' });
-    grid.append(el('button', { type: 'button', class: 'cmp-card', style: `--c:${BOOK_INFO[b.code].color}`, 'aria-current': String(b === book),
-      'aria-label': `${b.age} ${spreadTitle(t)} 열기`, onclick: () => { closeCmp(false); setBook(b, j); } },
+    const card = el('article', { class: 'cmp-card', style: `--c:${BOOK_INFO[b.code].color}`, 'aria-current': String(b === book), 'aria-label': b.age },
       el('div', { class: 'cmp-head' }, el('span', { class: 'bk' }, el('i'), b.age), el('span', { class: 'tt', text: t.date ? t.title : `${t.pages.join('–')}쪽 · ${t.label}` }), pill),
-      img,
-      el('span', { class: 'go', text: `${t.pages.join('–')}쪽 · ${b.paper} · 눌러서 이 책으로 열기` })));
+      el('button', { type: 'button', class: 'cmp-open', 'aria-label': `${b.age} ${spreadTitle(t)} 열람으로 열기`, onclick: open }, img));
+    if (!OFFLINE) {
+      const bar = el('div', { class: 'cmp-bar' });
+      const my = oks.filter(isMe);
+      if (busy.has(key)) bar.append(el('button', { type: 'button', class: 'btn ok', disabled: '', text: '남기는 중…' }));
+      else if (my.length) {
+        const done = el('div', { class: 'done' }, el('span', { text: `✓ 확인함 (${nameOf(my[0])})` }));
+        if (my.some(n => mine.has(n.id))) done.append(el('button', { type: 'button', class: 'linkbtn', text: '되돌리기', 'aria-label': `${b.age} 확인 되돌리기`, onclick: () => undoConfirm(b.code, j) }));
+        bar.append(done);
+      } else {
+        const ok = el('button', { type: 'button', class: 'btn ok', text: '✓ 확인 완료', 'aria-label': `${b.age} 확인 완료`, onclick: () => confirmSpread(b.code, j) });
+        if (!loaded) ok.disabled = true;
+        bar.append(ok);
+      }
+      const others = notesFor(b.code, j).filter(n => n.st !== 'ok').sort((x, y) => x.at - y.at);
+      const isOpen = cmpOpenNotes.has(key);
+      bar.append(el('button', { type: 'button', class: 'btn', 'aria-expanded': String(isOpen), 'aria-controls': `cmp-more-${b.code}`,
+        text: `수정 필요 / 메모${others.length ? ` ${others.length}` : ''} ${isOpen ? '▴' : '▾'}`,
+        onclick: () => { if (isOpen) cmpOpenNotes.delete(key); else cmpOpenNotes.add(key); renderCmp(); if (!isOpen) setTimeout(() => { const ta = $(`cmp-t-${b.code}`); if (ta) ta.focus(); }, 0); } }));
+      bar.append(el('button', { type: 'button', class: 'linkbtn open', text: '이 책으로 열기 →', onclick: open }));
+      card.append(bar);
+      if (isOpen) {
+        const more = el('div', { class: 'cmp-more', id: `cmp-more-${b.code}` });
+        if (!others.length) more.append(el('p', { class: 'empty', text: '아직 남긴 수정·메모가 없어요.' }));
+        for (const n of others) {
+          const row = el('div', { class: 'who' }, el('span', {}, el('b', { text: ST[n.st] }), ' ', el('span', { text: `· ${nameOf(n)} · ${fmt(n.at)}` })));
+          if (mine.has(n.id)) row.append(el('button', { type: 'button', text: '지우기', onclick: () => removeNote(n) }));
+          more.append(el('div', { class: `note st-${n.st}` }, row, n.text ? el('p', { text: n.text }) : null));
+        }
+        const d = cmpDraft[key] || (cmpDraft[key] = { st: 'fix', text: '' });
+        const ta = el('textarea', { id: `cmp-t-${b.code}`, maxlength: '2000', 'aria-label': `${b.age} 수정·메모 내용`, placeholder: '예: 2면 질문 2 보기 ③ 줄바꿈 어색함', oninput: e => { d.text = e.target.value; } });
+        ta.value = d.text;
+        const seg = el('div', { class: 'seg', role: 'radiogroup', 'aria-label': '상태' },
+          ...[['fix', '수정 필요'], ['memo', '메모']].map(([v, label]) => {
+            const r = el('input', { type: 'radio', name: `cst-${b.code}`, value: v, onchange: () => { d.st = v; } });
+            r.checked = d.st === v;
+            return el('label', { class: `st-${v}` }, r, label);
+          }));
+        const sending = busy.has(key + ':n');
+        const send = el('button', { class: 'btn primary', type: 'submit', text: sending ? '남기는 중…' : '남기기' });
+        if (sending) send.disabled = true;
+        more.append(el('form', { onsubmit: async e => {
+          e.preventDefault();
+          if (!myName) { openGate(); return; }
+          const text = d.text.trim();
+          if (!text) { toast('수정할 점이나 메모 내용을 적어 주세요.'); $(`cmp-t-${b.code}`).focus(); return; }
+          busy.add(key + ':n'); renderCmp();
+          try { await addNote(b.code, j, d.st, text); d.text = ''; toast(`${b.age}에 남겼어요.`); }
+          catch (err) { toast('남기지 못했어요. 인터넷 연결을 확인하고 다시 눌러 주세요.'); }
+          finally { busy.delete(key + ':n'); refreshMarks(); }
+        } }, seg, ta, el('div', { class: 'row' }, el('span', { class: 'hint', text: `${b.age} ${t.date || t.pages.join('–') + '쪽'}에 남겨요` }), send)));
+        card.append(more);
+      }
+    }
+    grid.append(card);
   }
+  if (keepId && $(keepId)) { const n = $(keepId); n.focus({ preventScroll: true }); if (caret) n.setSelectionRange(caret[0], caret[1]); }
 }
-function openCmp() { renderCmp(); $('cmp').hidden = false; $('cmp').scrollTop = 0; document.body.classList.add('locked'); $('cmp-close').focus(); }
+// 같이 보기에서 Enter: 내가 아직 확인 안 한 책을 모두 확인하고 다음 날로
+function confirmAllAndNext() {
+  if (!OFFLINE) {
+    if (!myName) { openGate(); return; }
+    if (!loaded) { toast('검수 기록을 불러오는 중이에요. 잠시 뒤 다시 눌러 주세요.'); return; }
+    confirmMany(cmpTargets());
+  }
+  if (idx < book.spreads.length - 1) show(idx + 1);
+}
+function openCmp() { $('cmp').hidden = false; renderCmp(); $('cmp').scrollTop = 0; document.body.classList.add('locked'); $('cmp').focus(); }
 function closeCmp(refocus = true) { $('cmp').hidden = true; document.body.classList.remove('locked'); if (refocus) $('v-cmp').focus(); }
 
 let toastT = 0;
 function toast(msg) { const t = $('toast'); t.textContent = msg; t.hidden = false; clearTimeout(toastT); toastT = setTimeout(() => { t.hidden = true; }, 3000); }
-function refreshMarks() { renderBooks(); renderConfirm(); renderThread(); renderThumbs(); renderReview(); }
+function refreshMarks() { renderBooks(); renderConfirm(); renderThread(); renderThumbs(); renderReview(); if (!$('cmp').hidden) renderCmp(); }
+function rerenderBusy() { renderConfirm(); renderThumbs(); if (!$('cmp').hidden) renderCmp(); }
+async function postOk(code, i) {
+  const j = await call({ action: 'add', name: myName, book: code, spread: i, st: 'ok', text: '', token });
+  if (j.id) { mine.add(String(j.id)); store.set('bt-mine', [...mine]); }
+}
+async function addNote(code, i, st, text) {
+  const j = await call({ action: 'add', name: myName, book: code, spread: i, st, text: text.slice(0, 2000), token });
+  if (j.id) { mine.add(String(j.id)); store.set('bt-mine', [...mine]); }
+}
+// 여러 펼침을 한꺼번에 확인(4권 모두 확인). 내가 이미 확인한 곳은 건너뜀
+async function confirmMany(list) {
+  if (OFFLINE) return;
+  if (!myName) { openGate(); return; }
+  if (!loaded) { toast('검수 기록을 불러오는 중이에요. 잠시 뒤 다시 눌러 주세요.'); return; }
+  const todo = list.filter(([code, i]) => !busy.has(`${code}:${i}`) && !okNotes(code, i).some(isMe));
+  if (!todo.length) return 0;
+  todo.forEach(([code, i]) => busy.add(`${code}:${i}`)); rerenderBusy();
+  let ok = 0;
+  for (const [code, i] of todo) {
+    try { await postOk(code, i); ok++; } catch (e) {}
+    busy.delete(`${code}:${i}`); refreshMarks();
+  }
+  toast(ok === todo.length ? `${ok}권 확인 완료를 남겼어요.` : `${todo.length - ok}권은 남기지 못했어요. 다시 눌러 주세요.`);
+  return ok;
+}
 async function confirmSpread(code, i) {
   const key = `${code}:${i}`;
   if (OFFLINE || busy.has(key)) return;
   if (!myName) { openGate(); return; }
   if (okNotes(code, i).some(isMe)) return;
-  busy.add(key); renderConfirm(); renderThumbs();
+  busy.add(key); rerenderBusy();
   try {
-    const j = await call({ action: 'add', name: myName, book: code, spread: i, st: 'ok', text: '', token });
-    if (j.id) { mine.add(String(j.id)); store.set('bt-mine', [...mine]); }
+    await postOk(code, i);
     toast('확인 완료를 남겼어요.');
   } catch (e) { toast('남기지 못했어요. 인터넷 연결을 확인하고 다시 눌러 주세요.'); }
   finally { busy.delete(key); refreshMarks(); }
@@ -657,7 +770,7 @@ async function undoConfirm(code, i) {
   const key = `${code}:${i}`;
   const mineOk = okNotes(code, i).filter(n => mine.has(n.id));
   if (OFFLINE || busy.has(key) || !mineOk.length) return;
-  busy.add(key); renderConfirm(); renderThumbs();
+  busy.add(key); rerenderBusy();
   try {
     for (const n of mineOk) { await call({ action: 'delete', id: n.id, token }); mine.delete(n.id); }
     store.set('bt-mine', [...mine]);
@@ -740,7 +853,10 @@ function takeNotes(list) {
   renderBooks(); renderThread(); renderConfirm(); renderThumbs(); renderReview();
   if (!$('cmp').hidden) renderCmp();
 }
-async function call(body) {
+// 쓰기 요청은 하나씩 차례로 보낸다(응답 순서가 뒤바뀌어 목록이 잠깐 옛것으로 돌아가지 않게)
+let writeQ = Promise.resolve();
+function call(body) { const p = writeQ.then(() => send(body)); writeQ = p.catch(() => {}); return p; }
+async function send(body) {
   const r = await fetch(SHEET_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(body) });
   const j = await r.json();
   if (!j.ok) throw new Error(j.error || 'failed');
@@ -753,7 +869,7 @@ async function load() {
 }
 async function removeNote(n) {
   try { await call({ action: 'delete', id: n.id, token }); mine.delete(n.id); store.set('bt-mine', [...mine]); }
-  catch (e) { $('p-hint').textContent = '지우지 못했어요. 다시 눌러 주세요.'; }
+  catch (e) { toast('지우지 못했어요. 다시 눌러 주세요.'); }
 }
 
 $('p-form').addEventListener('submit', async e => {
@@ -779,6 +895,9 @@ $('v-prev').onclick = () => show(idx - 1);
 $('v-next').onclick = () => show(idx + 1);
 $('v-cmp').onclick = openCmp;
 $('cmp-close').onclick = () => closeCmp();
+$('cmp-all').onclick = () => confirmMany(cmpTargets());
+// 마우스로 누른 버튼에 포커스가 남으면 다음 Enter가 그 버튼을 또 누르므로, 같이 보기 창으로 포커스를 돌려 둔다
+$('cmp').addEventListener('click', e => { const bt = e.target.closest('button'); if (bt && e.detail > 0 && !$('cmp').hidden) setTimeout(() => { if (!document.activeElement || !document.activeElement.closest('textarea, input')) $('cmp').focus({ preventScroll: true }); }, 0); });
 $('cmp-prev').onclick = () => show(idx - 1);
 $('cmp-next').onclick = () => show(idx + 1);
 $('v-jump').onchange = e => show(Number(e.target.value));
@@ -788,6 +907,10 @@ document.addEventListener('keydown', e => {
   if (e.target.closest('textarea, input, select')) return;
   if (!$('cmp').hidden) {
     if (e.key === 'Escape') { closeCmp(); e.preventDefault(); }
+    else if (e.key === 'Enter' && !e.isComposing && !e.repeat && !e.altKey && !e.ctrlKey && !e.metaKey && !e.shiftKey) {
+      if (e.target.closest('button, a, summary')) return; // 포커스 있는 버튼은 그대로 눌리게
+      confirmAllAndNext(); e.preventDefault();
+    }
     else if (e.key === 'ArrowLeft') { show(idx - 1); e.preventDefault(); }
     else if (e.key === 'ArrowRight') { show(idx + 1); e.preventDefault(); }
     return;
