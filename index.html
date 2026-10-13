@@ -257,7 +257,10 @@ form.add .row { display: flex; justify-content: space-between; align-items: cent
 .thumb .cap span { color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .marks { position: absolute; top: 5px; right: 5px; display: flex; gap: 3px; }
 .marks i { font-style: normal; font-size: 11px; font-weight: 700; line-height: 1; padding: 3px 5px; border-radius: 999px; color: #fff; }
-.marks .f { background: #c8352c; } .marks .o { background: #2c7d55; } .marks .n { background: #8a6a12; }
+.marks .f { background: #c8352c; } .marks .o { background: #2c7d55; } .marks .n { background: #8a6a12; } .marks .r { background: #2a5d9a; }
+.dtag { display: inline-block; margin-left: 6px; font-size: 11.5px; font-weight: 700; padding: 1px 7px; border-radius: 999px; color: #fff; background: #2a5d9a; white-space: nowrap; }
+.dtag.part { background: #8a6a12; }
+.cmp-st.st-done { color: #2a5d9a; }
 .filters { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
 .chip { padding: 5px 11px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); cursor: pointer; font-size: 13px; }
 .chip[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
@@ -388,6 +391,7 @@ td.txt { white-space: pre-wrap; overflow-wrap: anywhere; min-width: 220px; }
       <button class="chip" data-f="fix" aria-pressed="false">수정 필요</button>
       <button class="chip" data-f="todo" aria-pressed="false">아직 안 본 곳</button>
       <button class="chip" data-f="ok" aria-pressed="false">확인 완료</button>
+      <button class="chip" data-f="done" aria-pressed="false">반영함</button>
     </div>
     <div class="thumbs" id="thumbs"></div>
   </section>
@@ -465,6 +469,10 @@ const EXTRAS = [
   ['126쪽', '말씀 여행 길(두 달 지도)'], ['127쪽', '두 달 돌아보기'], ['128쪽', '기도 노트 · 판권(발행일·만든 사람 칸은 아직 비어 있음)'],
 ];
 const ST = { ok: '확인 완료', fix: '수정 필요', memo: '메모' };
+// 원고·조판에 반영한 수정 의견(id → 표시 글). '반영함'으로 끝나면 끝난 것, 아니면 아직 남은 일이 있음
+const DONE = {"eadd7b91mv4o7zyn": "10/13 반영함", "f3848b10mv54kzdo": "10/13 반영함", "2e8afe9bmv54q2bw": "10/13 반영함", "e7d0c57emv54sg1i": "10/13 반영함", "3c2e01b3mv54vz76": "10/13 반영함", "d628ebdbmv550bf5": "10/13 반영함", "c85b25d7mv555ayj": "10/13 반영함", "ad465d0emv55fmlj": "10/13 반영함", "b2689b4dmv55j7rg": "10/13 반영함", "30c6f2aamv56fg9w": "판권은 콘텐츠팀 확인 중", "da38fc5emv56fwvu": "10/13 반영함", "56fccca3mv57zp6i": "10/13 반영함", "3afa4be8mv57zrp0": "10/13 반영함", "830dfe94mv57zttb": "10/13 반영함", "889c73d0mv57zw2j": "10/13 반영함", "814587cemv57zyl4": "10/13 반영함", "4ef7ad99mv5800mq": "10/13 반영함", "066edbd8mv5802m3": "10/13 반영함", "10abab09mv5804u9": "10/13 반영함", "a678f623mv5807c8": "10/13 반영함", "578680ecmv580acj": "10/13 반영함", "0a13130dmv580csu": "10/13 반영함", "6b1998cbmv580eyy": "10/13 반영함", "d72e64famv580hd8": "10/13 반영함", "d35e3556mv580ji0": "10/13 반영함", "40e416dfmv580lqe": "10/13 반영함", "977a173amv580o2z": "10/13 반영함", "c3bb72d3mv580qt0": "10/13 반영함", "f103e0acmv580u89": "10/13 반영함", "c8c9b8b4mv580wsq": "10/13 반영함", "cdae0965mv580z2s": "10/13 반영함", "dcb6506dmv5811ja": "10/13 반영함", "b8cd0ab4mv581485": "10/13 반영함", "8a3ea0fbmv5816ey": "10/13 반영함", "d334536amv5818rj": "10/13 반영함", "33714fe2mv581b03": "10/13 반영함", "e817ef13mv581d8x": "10/13 반영함", "b5cf8719mv581fkc": "10/13 반영함", "0cf19a91mv581hyl": "10/13 반영함", "993e85aemv581kfp": "10/13 반영함", "6b3cafdfmv581mrg": "10/13 반영함", "26537923mv581ou8": "10/13 반영함", "372501fcmv581qzb": "10/13 반영함", "a7ddf733mv581td8": "10/13 반영함", "cc9cdd79mv581wcg": "10/13 반영함", "17bc2d65mv581yvi": "10/13 반영함", "9b7a6e4amv5821ct": "10/13 반영함", "da1518f9mv5823xt": "10/13 반영함", "9c58006bmv5826mj": "10/13 반영함", "f0ecef2cmv58293x": "일부 반영 · 판권은 콘텐츠팀 확인 중", "585d3b97mv582btp": "10/13 반영함", "822ed9b5mv582e3m": "10/13 반영함", "5fc32064mv582hen": "10/13 반영함", "8ca8d4ffmv582jt5": "10/13 반영함", "fb51b16fmv582map": "10/13 반영함", "bafeb3c4mv582oxp": "10/13 반영함", "f68f1262mv582rr2": "10/13 반영함", "5400b4e1mv582ufv": "10/13 반영함", "40461dd6mv582wwe": "10/13 반영함", "35c594f8mv582z98": "10/13 반영함", "62904b7cmv5831m9": "일부 반영 · 판권은 콘텐츠팀 확인 중", "29ec5014mv5833w2": "10/13 반영함", "321c2cf3mv58368b": "10/13 반영함", "8d634b51mv5838pi": "10/13 반영함", "56143149mv583b6y": "10/13 반영함", "8819f6afmv583dev": "10/13 반영함", "ee9d484emv583g62": "10/13 반영함", "a637a515mv583ijr": "10/13 반영함", "3514755fmv583lv6": "10/13 반영함", "7c7e30famv583ore": "10/13 반영함", "de338848mv583rgw": "10/13 반영함", "c0363816mv583uaw": "10/13 반영함", "7adcd3e7mv583wdo": "10/13 반영함", "1d166277mv583y6w": "10/13 반영함", "14df15d2mv5840px": "10/13 반영함", "c7e73168mv5843h9": "일부 반영 · 판권은 콘텐츠팀 확인 중"};
+const isDone = n => n.st === 'fix' && /반영함$/.test(DONE[n.id] || '');
+const doneTag = n => DONE[n.id] ? el('span', { class: isDone(n) ? 'dtag' : 'dtag part', text: (isDone(n) ? '✓ ' : '') + DONE[n.id] }) : null;
 
 // 검수 기록은 구글 시트(Apps Script 웹 앱)에 모은다. claude.ai 안에서는 외부 주소에 쓸 수 없어 GitHub 주소로 안내한다.
 const SHEET_URL = 'https://script.google.com/macros/s/AKfycbzRtcsJL7GkVG7dK6JGqEIUq_-eM5AD8zHFJL3atupBD0kxJjvFxaB_Ljl08AYvNL_S/exec';
@@ -504,7 +512,7 @@ const isMe = n => mine.has(n.id) || (!!myName && n.name.trim() === myName);
 const uniq = a => [...new Set(a)];
 function statusOf(code, i) {
   const ns = notesFor(code, i);
-  return { fix: ns.filter(n => n.st === 'fix').length, ok: ns.filter(n => n.st === 'ok').length, memo: ns.filter(n => n.st === 'memo').length };
+  return { done: ns.filter(isDone).length, fix: ns.filter(n => n.st === 'fix' && !isDone(n)).length, ok: ns.filter(n => n.st === 'ok').length, memo: ns.filter(n => n.st === 'memo').length };
 }
 
 function renderBooks() {
@@ -514,14 +522,14 @@ function renderBooks() {
     const info = BOOK_INFO[b.code];
     box.append(el('button', { 'aria-pressed': String(b === book), style: `--c:${info.color}`, onclick: () => setBook(b) }, el('i'), b.age, el('small', { text: b.paper })));
     const days = b.spreads.length;
-    let ok = 0, fix = 0;
-    b.spreads.forEach((s, i) => { const st = statusOf(b.code, i); if (st.fix) fix++; else if (st.ok) ok++; });
+    let ok = 0, fix = 0, done = 0;
+    b.spreads.forEach((s, i) => { const st = statusOf(b.code, i); if (st.fix) fix++; else if (st.ok || st.done) ok++; done += st.done; });
     const meter = el('div', { class: 'meter', 'aria-hidden': 'true' }, el('b', { style: `width:${ok / days * 100}%` }), el('s', { style: `width:${fix / days * 100}%` }));
     ov.append(el('button', { 'aria-pressed': String(b === book), style: `--c:${info.color}`, onclick: () => setBook(b) },
       el('span', { class: 't' }, el('i'), `${b.age}`),
       el('dl', {}, el('dt', { text: '본문' }), el('dd', { text: `${info.size} · 128면` }), el('dt', { text: '작업 크기' }), el('dd', { text: `${info.work}mm` }), el('dt', { text: '표지 펼침' }), el('dd', { text: `${info.coverWork}mm` })),
       meter,
-      el('span', { class: 'm', text: `확인 ${ok} · 수정 필요 ${fix} · 남은 곳 ${days - ok - fix} / ${days}펼침` })));
+      el('span', { class: 'm', text: `확인·반영 ${ok} · 수정 필요 ${fix} · 남은 곳 ${days - ok - fix} / ${days}펼침${done ? ` · 의견 ${done}건 반영함` : ''}` })));
   }
 }
 
@@ -586,7 +594,7 @@ function renderThread() {
   for (const n of ns) {
     const who = el('b', { text: ST[n.st] });
     const name = el('span', { text: `· ${nameOf(n)} · ${fmt(n.at)}` });
-    const row = el('div', { class: 'who' }, el('span', {}, who, ' ', name));
+    const row = el('div', { class: 'who' }, el('span', {}, who, ' ', name, doneTag(n)));
     if (mine.has(n.id)) row.append(el('button', { type: 'button', text: '지우기', onclick: () => removeNote(n) }));
     box.append(el('div', { class: `note st-${n.st}` }, row, n.text ? el('p', { text: n.text }) : null));
   }
@@ -650,6 +658,7 @@ function renderCmp() {
     let pill;
     if (OFFLINE) pill = null;
     else if (st.fix) pill = el('span', { class: 'cmp-st st-fix', text: `수정 필요 ${st.fix}` });
+    else if (st.done && !names.length) pill = el('span', { class: 'cmp-st st-done', text: `✓ 반영함 ${st.done}` });
     else if (names.length) pill = el('span', { class: 'cmp-st st-ok', text: `✓ ${names.join(', ')}`, title: `확인: ${names.join(', ')}` });
     else pill = el('span', { class: 'cmp-st todo', text: loaded ? '아직 확인 전' : '불러오는 중' });
     const open = () => { closeCmp(false); setBook(b, j); };
@@ -681,7 +690,7 @@ function renderCmp() {
         const more = el('div', { class: 'cmp-more', id: `cmp-more-${b.code}` });
         if (!others.length) more.append(el('p', { class: 'empty', text: '아직 남긴 수정·메모가 없어요.' }));
         for (const n of others) {
-          const row = el('div', { class: 'who' }, el('span', {}, el('b', { text: ST[n.st] }), ' ', el('span', { text: `· ${nameOf(n)} · ${fmt(n.at)}` })));
+          const row = el('div', { class: 'who' }, el('span', {}, el('b', { text: ST[n.st] }), ' ', el('span', { text: `· ${nameOf(n)} · ${fmt(n.at)}` }), doneTag(n)));
           if (mine.has(n.id)) row.append(el('button', { type: 'button', text: '지우기', onclick: () => removeNote(n) }));
           more.append(el('div', { class: `note st-${n.st}` }, row, n.text ? el('p', { text: n.text }) : null));
         }
@@ -786,12 +795,14 @@ function renderThumbs() {
     const st = statusOf(book.code, i);
     if (thumbFilter === 'fix' && !st.fix) return;
     if (thumbFilter === 'ok' && !(st.ok && !st.fix)) return;
-    if (thumbFilter === 'todo' && (st.ok || st.fix)) return;
+    if (thumbFilter === 'todo' && (st.ok || st.fix || st.done)) return;
+    if (thumbFilter === 'done' && !st.done) return;
     const col = i % book.cols, row = Math.floor(i / book.cols);
     const pic = el('span', { class: 'pic', style: `--ar:${book.tw}/${book.th};background-image:url(img/${book.code}/thumbs.jpg);background-size:${book.cols * 100}% ${rows * 100}%;background-position:${col / (book.cols - 1) * 100}% ${rows > 1 ? row / (rows - 1) * 100 : 0}%` });
     const marks = el('span', { class: 'marks' });
     if (st.fix) marks.append(el('i', { class: 'f', text: `수정 ${st.fix}` }));
-    else if (st.ok) marks.append(el('i', { class: 'o', text: '✓' }));
+    else if (st.done) marks.append(el('i', { class: 'r', text: `반영 ${st.done}` }));
+    if (!st.fix && st.ok) marks.append(el('i', { class: 'o', text: '✓' }));
     if (st.memo) marks.append(el('i', { class: 'n', text: `메모 ${st.memo}` }));
     const thumb = el('button', { class: 'thumb', 'data-i': String(i), 'aria-current': String(i === idx), 'aria-label': `${spreadTitle(s)}, ${s.pages.join('–')}쪽`, onclick: () => show(i, true) },
       pic, marks, el('span', { class: 'cap' }, el('b', { text: s.date || s.pages.join('–') }), el('span', { text: s.date ? s.title : s.label })));
@@ -830,7 +841,7 @@ function renderReview() {
     const who = el('td', { text: nameOf(n) });
     tb.append(el('tr', {},
       el('td', { class: 'go' }, el('button', { type: 'button', text: `${b.age} ${s.date || s.pages.join('–') + '쪽'}`, onclick: () => { setBook(b, n.spread); } })),
-      el('td', {}, el('span', { class: `pill st-${n.st}`, text: ST[n.st] })),
+      el('td', {}, el('span', { class: `pill st-${n.st}`, text: ST[n.st] }), doneTag(n)),
       el('td', { class: 'txt', text: n.text || '—' }),
       who,
       el('td', { class: 'num', text: fmt(n.at) })));
