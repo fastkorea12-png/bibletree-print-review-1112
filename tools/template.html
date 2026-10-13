@@ -70,8 +70,8 @@ button, select, textarea, input { font: inherit; color: inherit; }
 .nav a { color: var(--muted); text-decoration: none; padding: 4px 10px; border-radius: 6px; font-size: 14px; }
 .nav a:hover { color: var(--ink); background: var(--sunk); }
 
-main { display: grid; gap: 56px; padding-block: 28px 80px; }
-section { display: grid; gap: 20px; scroll-margin-top: 110px; }
+main { display: grid; grid-template-columns: minmax(0, 1fr); gap: 56px; padding-block: 28px 80px; }
+section { display: grid; grid-template-columns: minmax(0, 1fr); gap: 20px; scroll-margin-top: 110px; }
 .head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 16px; }
 .head .eyebrow { font-family: var(--mono); font-size: 12px; letter-spacing: 0.08em; color: var(--age-text); text-transform: uppercase; }
 .head p { color: var(--muted); }
@@ -145,7 +145,53 @@ section { display: grid; gap: 20px; scroll-margin-top: 110px; }
 .stage-foot { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 8px 12px; border-top: 1px solid var(--line); font-size: 12.5px; color: var(--muted); }
 .kbd { font-family: var(--mono); font-size: 11px; border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 4px; padding: 0 5px; }
 
-.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; display: grid; gap: 0; position: sticky; top: 120px; max-height: calc(100vh - 140px); overflow: hidden; grid-template-rows: auto minmax(0, 1fr) auto; }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; display: grid; gap: 0; position: sticky; top: 120px; max-height: calc(100vh - 140px); overflow: hidden; grid-template-rows: auto auto minmax(0, 1fr) auto; }
+/* 한 번 눌러 확인 */
+.confirm { padding: 12px 14px; border-bottom: 1px solid var(--line); display: grid; gap: 6px; }
+.btn.ok { min-height: 46px; background: var(--ok); border-color: var(--ok); color: var(--surface); font-weight: 700; font-size: 15.5px; }
+.btn.ok:hover { background: color-mix(in oklab, var(--ok) 86%, var(--ink)); }
+.done { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 46px; padding: 6px 12px; border-radius: 8px; background: color-mix(in oklab, var(--ok) 14%, var(--surface)); color: var(--ok); font-weight: 700; }
+.done span { min-width: 0; overflow-wrap: anywhere; }
+.confirm .others { font-size: 12.5px; color: var(--muted); overflow-wrap: anywhere; }
+.linkbtn { border: 0; background: none; padding: 4px 0; color: var(--muted); text-decoration: underline; cursor: pointer; font-size: 13px; font-weight: 500; white-space: nowrap; }
+.linkbtn:hover { color: var(--ink); }
+.me { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); min-width: 0; }
+.me b { color: var(--ink); font-weight: 700; max-width: 12em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/* 이름 입력 화면 */
+.gate { position: fixed; inset: 0; z-index: 100; background: var(--bg); display: grid; place-items: center; padding: 24px 16px; overflow: auto; }
+.gate form { width: min(400px, 100%); background: var(--surface); border: 1px solid var(--line); border-radius: 14px; box-shadow: var(--shadow); padding: 28px 24px; display: grid; gap: 14px; }
+.gate .logo { font: 400 18px/1 var(--display); letter-spacing: 0.04em; }
+.gate .logo i { font-style: normal; color: #e98a2c; } .gate .logo i + i { color: #7fb6d9; }
+.gate h1 { font: 400 26px/1.25 var(--display); }
+.gate p { color: var(--muted); font-size: 14px; }
+.gate label { display: grid; gap: 6px; font-size: 13px; font-weight: 500; }
+.gate input { padding: 12px; border-radius: 8px; border: 1px solid var(--line); background: var(--bg); font-size: 16px; }
+.gate .btn { min-height: 46px; font-size: 16px; }
+.gate .err { color: var(--proof); font-size: 13px; min-height: 1.4em; }
+.gate .row { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+body.gated, body.locked { overflow: hidden; }
+@media (hover: none) { .kbd-hint { display: none; } }
+/* 4권 같이 보기 */
+.cmp { position: fixed; inset: 0; z-index: 80; background: var(--bg); overflow: auto; overscroll-behavior: contain; }
+.cmp-top { position: sticky; top: 0; z-index: 1; background: color-mix(in oklab, var(--bg) 90%, transparent); backdrop-filter: blur(10px); border-bottom: 1px solid var(--line); padding-top: env(safe-area-inset-top, 0px); }
+.cmp-top .wrap { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; padding-block: 10px; }
+.cmp-top .meta { display: grid; min-width: 0; margin-right: auto; }
+.cmp-top .meta b { font: 400 20px/1.2 var(--display); letter-spacing: 0.01em; }
+.cmp-top .meta span { color: var(--muted); font-size: 13px; }
+.cmp-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; padding-block: 16px 40px; }
+.cmp-card { display: grid; gap: 0; padding: 0; text-align: left; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); overflow: hidden; cursor: pointer; }
+.cmp-card:hover { border-color: var(--c); }
+.cmp-card[aria-current="true"] { border-color: var(--c); box-shadow: inset 0 0 0 1px var(--c); }
+.cmp-head { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; padding: 10px 12px; border-bottom: 1px solid var(--line); }
+.cmp-head .bk { display: inline-flex; align-items: center; gap: 7px; font-weight: 700; }
+.cmp-head .bk i { width: 10px; height: 10px; border-radius: 3px; background: var(--c); }
+.cmp-head .tt { color: var(--muted); font-size: 13px; min-width: 0; flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cmp-st { font-size: 12px; font-weight: 700; padding: 2px 8px; border-radius: 999px; color: var(--st); background: color-mix(in oklab, var(--st) 14%, transparent); max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cmp-st.todo { --st: var(--muted); }
+.cmp-card img { display: block; width: 100%; height: auto; background: #fff; }
+.cmp-card .go { padding: 8px 12px; font-size: 12.5px; color: var(--muted); border-top: 1px solid var(--line); }
+@media (max-width: 760px) { .cmp-grid { grid-template-columns: minmax(0, 1fr); } }
+.toast { position: fixed; left: 50%; bottom: calc(16px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); z-index: 90; max-width: calc(100% - 32px); padding: 10px 16px; border-radius: 10px; background: var(--ink); color: var(--bg); font-size: 14px; box-shadow: var(--shadow); }
 .panel header { padding: 12px 14px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; align-items: center; gap: 8px; }
 .panel header span { font-family: var(--mono); font-size: 12px; color: var(--muted); }
 .thread { overflow: auto; padding: 10px 14px; display: grid; gap: 10px; align-content: start; min-height: 80px; }
@@ -157,7 +203,7 @@ section { display: grid; gap: 20px; scroll-margin-top: 110px; }
 .note button { border: 0; background: none; color: var(--muted); cursor: pointer; font-size: 12px; padding: 0; text-decoration: underline; }
 .st-ok { --st: var(--ok); } .st-fix { --st: var(--proof); } .st-memo { --st: var(--note); }
 form.add { border-top: 1px solid var(--line); padding: 12px 14px; display: grid; gap: 8px; }
-.seg { display: grid; grid-template-columns: repeat(3, 1fr); border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+.seg { display: grid; grid-template-columns: repeat(2, 1fr); border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
 .seg label { text-align: center; padding: 6px 4px; font-size: 13px; cursor: pointer; border-left: 1px solid var(--line); }
 .seg label:first-child { border-left: 0; }
 .seg input { position: absolute; opacity: 0; pointer-events: none; }
@@ -170,6 +216,13 @@ form.add .row { display: flex; justify-content: space-between; align-items: cent
 
 /* thumbnails */
 .thumbs { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 14px 10px; }
+.tcell { display: grid; gap: 4px; align-content: start; min-width: 0; }
+.tok { display: flex; align-items: center; justify-content: space-between; gap: 6px; min-width: 0; min-height: 30px; }
+.tok span { font-size: 11.5px; color: var(--ok); font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+.tok button { flex: none; margin-left: auto; min-height: 30px; padding: 0 10px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); cursor: pointer; font-size: 12px; font-weight: 500; }
+.tok button:hover { border-color: var(--ok); color: var(--ok); }
+.tok button[aria-pressed="true"] { border-color: var(--ok); color: var(--ok); background: color-mix(in oklab, var(--ok) 12%, var(--surface)); font-weight: 700; }
+.tok button:disabled { opacity: 0.55; cursor: default; }
 .thumb { display: grid; gap: 4px; border: 0; padding: 0; background: none; cursor: pointer; text-align: left; position: relative; }
 .thumb .pic { aspect-ratio: var(--ar); border-radius: 4px; background-color: #fff; background-repeat: no-repeat; box-shadow: 0 0 0 1px var(--line); }
 .thumb[aria-current="true"] .pic { box-shadow: 0 0 0 2px var(--age-text); }
@@ -213,10 +266,32 @@ td.txt { white-space: pre-wrap; overflow-wrap: anywhere; min-width: 220px; }
 }
 </style>
 
+<div class="gate" id="gate" role="dialog" aria-modal="true" aria-labelledby="g-h" hidden>
+  <form id="g-form" novalidate>
+    <span class="logo">BIBLE TREE 2026 <i>11</i><i>12</i></span>
+    <h1 id="g-h">인쇄 검수</h1>
+    <p>검수 기록에 남길 이름을 적어 주세요. 이 기기에 기억해 두어 다음부터는 바로 들어가요.</p>
+    <label>이름<input id="g-name" type="text" maxlength="40" autocomplete="name" placeholder="예: 김바울 목사"></label>
+    <span class="err" id="g-err" role="alert"></span>
+    <div class="row"><button type="button" class="linkbtn" id="g-cancel" hidden>취소</button><button class="btn primary" type="submit" style="flex:1">검수 시작</button></div>
+  </form>
+</div>
+<p class="toast" id="toast" role="status" hidden></p>
+<div class="cmp" id="cmp" role="dialog" aria-modal="true" aria-labelledby="cmp-h" hidden>
+  <div class="cmp-top"><div class="wrap">
+    <div class="meta"><b id="cmp-h"></b><span>네 권의 같은 날 펼침 · 누르면 그 책 열람으로 가요</span></div>
+    <button class="btn" id="cmp-prev" type="button" aria-label="이전 날">‹ 이전</button>
+    <button class="btn" id="cmp-next" type="button" aria-label="다음 날">다음 ›</button>
+    <button class="btn primary" id="cmp-close" type="button">닫기</button>
+  </div></div>
+  <div class="wrap cmp-grid" id="cmp-grid"></div>
+</div>
+
 <div class="bar">
   <div class="wrap">
     <div class="brand"><b>BIBLE TREE 2026 <i>11</i><i>12</i></b><span>인쇄 검수</span></div>
     <div class="books" id="books" role="group" aria-label="책 고르기"></div>
+    <div class="me" id="me" hidden><span>검수자 <b id="me-name"></b></span><button type="button" class="linkbtn" id="me-change">이름 바꾸기</button></div>
     <nav class="nav" aria-label="섹션">
       <a href="#cover">표지</a><a href="#contents">내용</a><a href="#read">열람</a><a href="#review">검수 메모</a>
     </nav>
@@ -225,7 +300,7 @@ td.txt { white-space: pre-wrap; overflow-wrap: anywhere; min-width: 220px; }
 
 <main class="wrap">
   <section id="overview" aria-labelledby="ov-h">
-    <div class="head"><span class="eyebrow">네 권 한눈에</span><h2 id="ov-h">인쇄소 전달본 · 10월 8일</h2><p>에이프린트 무선제본 · 도련 사방 2mm · 책등 6.17mm · CMYK</p></div>
+    <div class="head"><span class="eyebrow">네 권 한눈에</span><h2 id="ov-h">인쇄소 전달본 · 10월 12일</h2><p>에이프린트 무선제본 · 도련 사방 2mm · 책등 6.17mm · CMYK</p></div>
     <div class="ov" id="ov"></div>
   </section>
 
@@ -258,22 +333,22 @@ td.txt { white-space: pre-wrap; overflow-wrap: anywhere; min-width: 220px; }
           <button class="btn" id="v-prev" aria-label="이전 펼침">‹ 이전</button>
           <select id="v-jump" aria-label="날짜로 가기"></select>
           <button class="btn" id="v-next" aria-label="다음 펼침">다음 ›</button>
+          <button class="btn" id="v-cmp" type="button" aria-haspopup="dialog">4권 같이 보기</button>
         </div>
         <div class="scroller" id="v-scroll"><img id="v-img" alt="" width="1522" height="1076"></div>
-        <div class="stage-foot"><span>그림을 누르면 2배로 커져요</span><span><span class="kbd">←</span> <span class="kbd">→</span> 넘기기</span></div>
+        <div class="stage-foot"><span>그림을 누르면 2배로 커져요</span><span class="kbd-hint"><span class="kbd">←</span> <span class="kbd">→</span> 넘기기 · <span class="kbd">Enter</span> 확인하고 다음</span></div>
       </div>
       <aside class="panel" aria-labelledby="p-h">
         <header><h3 id="p-h">이 펼침 검수</h3><span id="p-pages"></span></header>
+        <div class="confirm" id="p-confirm"></div>
         <div class="thread" id="p-thread"></div>
         <form class="add" id="p-form">
           <div class="seg" role="radiogroup" aria-label="상태">
-            <label class="st-ok"><input type="radio" name="st" id="st-ok" value="ok" checked>확인 완료</label>
-            <label class="st-fix"><input type="radio" name="st" id="st-fix" value="fix">수정 필요</label>
+            <label class="st-fix"><input type="radio" name="st" id="st-fix" value="fix" checked>수정 필요</label>
             <label class="st-memo"><input type="radio" name="st" id="st-memo" value="memo">메모</label>
           </div>
-          <input id="p-name" type="text" maxlength="40" autocomplete="name" placeholder="이름 (예: 김바울 목사)" aria-label="이름">
           <textarea id="p-text" placeholder="예: 2면 질문 2 보기 ③ 줄바꿈 어색함" aria-label="메모 내용"></textarea>
-          <div class="row"><span class="hint" id="p-hint">확인 완료는 내용 없이 남겨도 돼요</span><button class="btn primary" id="p-send" type="submit">남기기</button></div>
+          <div class="row"><span class="hint" id="p-hint">무엇을 고칠지 적어 주세요</span><button class="btn primary" id="p-send" type="submit">남기기</button></div>
         </form>
       </aside>
     </div>
@@ -310,7 +385,7 @@ const BOOK_INFO = {
 };
 const COVER_NOTES = {
   kids: [
-    ['앞표지 그림', '감나무 아래에서 열매 바구니를 든 아이들과 저녁 하늘의 별. 11월의 감사(열매)와 12월의 기다림(별)을 한 장면에 담았어요. 저학년·고학년이 같은 그림을 씁니다.'],
+    ['앞표지 그림', '열매가 가득 달린 가을 나무 아래에서 바구니에 열매를 담는 아이들과 저녁 하늘의 별. 11월의 감사(열매)와 12월의 기다림(별)을 한 장면에 담았어요. 저학년·고학년이 같은 그림을 씁니다.'],
     ['글자', '9–10월호와 같은 체계: BIBLE TREE / 2026 / 1112. 네 권 모두 블랙한산스. 11은 단풍 주황(감사), 12는 겨울 하늘빛(기다림). 아래에 부제 ‘감사와 기다림’과 연령 띠.'],
     ['뒤표지', '앞표지 하늘을 이어 깐 바탕에 짧은 문구 하나 “고마워요, 그리고 기다려요”. 아래 왼쪽에 BIBLE TREE 2026 · 11–12와 발행 기관, 오른쪽에 바이블트리 웹 QR(검정 한 색).'],
     ['책등', '뒤표지 바탕색 위에 BIBLE TREE 2026 1112 · 감사와 기다림 · 연령 띠, 아래쪽에 HEM - 건강한교육사역. 위에서 아래로 읽어요.', '시안'],
@@ -372,6 +447,10 @@ const store = {
 let token = store.get('bt-token', '');
 if (!token) { token = Math.random().toString(36).slice(2) + Date.now().toString(36); store.set('bt-token', token); }
 const mine = new Set(store.get('bt-mine', []));
+// 검수자 이름: 처음 들어올 때 한 번 받고 이 기기에 기억
+const VIEW_ONLY = !!(window.claude && window.claude.use) || !SHEET_URL.startsWith('https://');
+let myName = String(store.get('bt-name', '') || '').trim().slice(0, 40);
+const busy = new Set();
 try { const s = localStorage.getItem('bt-book'); if (s && BOOKS.find(b => b.code === s)) book = BOOKS.find(b => b.code === s); } catch (e) {}
 
 const $ = id => document.getElementById(id);
@@ -389,6 +468,9 @@ const kind = b => b.code === 'teen' ? 'teen' : b.code === 'young' ? 'young' : 'k
 const spreadTitle = s => s.date ? `${s.date} (${s.wd}) ${s.title}` : s.label;
 const spreadSub = s => (s.date ? `${s.ref} · ${s.theme} · ` : '') + s.pages.join('–') + '쪽';
 const notesFor = (code, i) => notes.filter(n => n.book === code && n.spread === i);
+const okNotes = (code, i) => notesFor(code, i).filter(n => n.st === 'ok');
+const isMe = n => mine.has(n.id) || (!!myName && n.name.trim() === myName);
+const uniq = a => [...new Set(a)];
 function statusOf(code, i) {
   const ns = notesFor(code, i);
   return { fix: ns.filter(n => n.st === 'fix').length, ok: ns.filter(n => n.st === 'ok').length, memo: ns.filter(n => n.st === 'memo').length };
@@ -458,7 +540,7 @@ function show(i, scroll) {
   $('v-prev').disabled = idx === 0; $('v-next').disabled = idx === book.spreads.length - 1;
   $('p-pages').textContent = `${book.age} ${s.pages.join('–')}쪽`;
   const nx = book.spreads[idx + 1]; if (nx) { const p = new Image(); p.src = `img/${book.code}/s${String(idx + 1).padStart(2, '0')}.jpg`; }
-  renderThread(); markThumbs();
+  renderThread(); renderConfirm(); markThumbs(); if (!$('cmp').hidden) renderCmp();
   if (scroll) $('read').scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
 }
 
@@ -469,7 +551,7 @@ function renderThread() {
   const box = $('p-thread'); box.replaceChildren();
   if (OFFLINE) { box.append(OFFLINE()); return; }
   const ns = notesFor(book.code, idx).sort((a, b) => a.at - b.at);
-  if (!ns.length) box.append(el('p', { class: 'empty', text: loaded ? '아직 남긴 검수가 없어요. 아래에 이름을 적고 확인 완료나 수정할 점을 남겨 주세요.' : '검수 기록을 불러오는 중이에요.' }));
+  if (!ns.length) box.append(el('p', { class: 'empty', text: loaded ? '아직 남긴 검수가 없어요. 다 봤으면 위의 확인 완료를, 고칠 점이 있으면 아래에 남겨 주세요.' : '검수 기록을 불러오는 중이에요.' }));
   for (const n of ns) {
     const who = el('b', { text: ST[n.st] });
     const name = el('span', { text: `· ${nameOf(n)} · ${fmt(n.at)}` });
@@ -477,6 +559,94 @@ function renderThread() {
     if (mine.has(n.id)) row.append(el('button', { type: 'button', text: '지우기', onclick: () => removeNote(n) }));
     box.append(el('div', { class: `note st-${n.st}` }, row, n.text ? el('p', { text: n.text }) : null));
   }
+}
+
+function renderConfirm() {
+  const box = $('p-confirm'); box.replaceChildren();
+  box.hidden = !!OFFLINE; if (OFFLINE) return;
+  const code = book.code, i = idx, oks = okNotes(code, i);
+  const my = oks.filter(isMe), others = uniq(oks.filter(n => !isMe(n)).map(nameOf));
+  if (busy.has(`${code}:${i}`)) box.append(el('button', { type: 'button', class: 'btn ok', disabled: '', text: '남기는 중…' }));
+  else if (my.length) {
+    const done = el('div', { class: 'done' }, el('span', { text: `✓ 확인함 (${nameOf(my[0])})` }));
+    if (my.some(n => mine.has(n.id))) done.append(el('button', { type: 'button', class: 'linkbtn', text: '되돌리기', onclick: () => undoConfirm(code, i) }));
+    box.append(done);
+  } else {
+    const b = el('button', { type: 'button', class: 'btn ok', text: loaded ? '✓ 확인 완료' : '불러오는 중…', onclick: () => confirmSpread(code, i) });
+    if (!loaded) b.disabled = true;
+    box.append(b);
+    if (myName) box.append(el('span', { class: 'hint' }, `누르면 ‘${myName}’ 이름으로 바로 남아요`, el('span', { class: 'kbd-hint' }, ' · ', el('span', { class: 'kbd', text: 'Enter' }), ' 확인하고 다음')));
+  }
+  if (others.length) box.append(el('span', { class: 'others', text: `확인한 사람: ${others.join(', ')}` }));
+}
+
+// Enter: 지금 펼침 확인 완료 + 다음 펼침으로 (이미 내가 확인했으면 넘기기만)
+function confirmAndNext() {
+  if (!OFFLINE) {
+    if (!myName) { openGate(); return; }
+    if (!loaded) { toast('검수 기록을 불러오는 중이에요. 잠시 뒤 다시 눌러 주세요.'); return; }
+    if (!okNotes(book.code, idx).some(isMe)) confirmSpread(book.code, idx);
+  }
+  if (idx < book.spreads.length - 1) show(idx + 1);
+}
+
+// 4권 같이 보기: 날짜로 맞추고, 날짜가 없는 면(표지·앞뒤 면)은 같은 순서로
+function matchIdx(b) {
+  const s = book.spreads[idx];
+  if (s.date) { const j = b.spreads.findIndex(x => x.date === s.date); if (j >= 0) return j; }
+  return idx < b.spreads.length ? idx : -1;
+}
+function renderCmp() {
+  const s = book.spreads[idx];
+  $('cmp-h').textContent = s.date ? `${s.date} (${s.wd}) 네 권 같이 보기` : `${s.pages.join('–')}쪽 · ${s.label}`;
+  $('cmp-prev').disabled = idx === 0; $('cmp-next').disabled = idx === book.spreads.length - 1;
+  const grid = $('cmp-grid'); grid.replaceChildren();
+  for (const b of BOOKS) {
+    const j = matchIdx(b); if (j < 0) continue;
+    const t = b.spreads[j], st = statusOf(b.code, j), names = uniq(okNotes(b.code, j).map(nameOf));
+    let pill;
+    if (OFFLINE) pill = null;
+    else if (st.fix) pill = el('span', { class: 'cmp-st st-fix', text: `수정 필요 ${st.fix}` });
+    else if (names.length) pill = el('span', { class: 'cmp-st st-ok', text: `✓ ${names.join(', ')}`, title: `확인: ${names.join(', ')}` });
+    else pill = el('span', { class: 'cmp-st todo', text: loaded ? '아직 확인 전' : '불러오는 중' });
+    const img = el('img', { src: `img/${b.code}/s${String(j).padStart(2, '0')}.jpg`, alt: `${b.age} ${t.pages.join('–')}쪽 펼침면`, width: String(b.pw * 2), height: String(b.ph), loading: 'lazy' });
+    grid.append(el('button', { type: 'button', class: 'cmp-card', style: `--c:${BOOK_INFO[b.code].color}`, 'aria-current': String(b === book),
+      'aria-label': `${b.age} ${spreadTitle(t)} 열기`, onclick: () => { closeCmp(false); setBook(b, j); } },
+      el('div', { class: 'cmp-head' }, el('span', { class: 'bk' }, el('i'), b.age), el('span', { class: 'tt', text: t.date ? t.title : `${t.pages.join('–')}쪽 · ${t.label}` }), pill),
+      img,
+      el('span', { class: 'go', text: `${t.pages.join('–')}쪽 · ${b.paper} · 눌러서 이 책으로 열기` })));
+  }
+}
+function openCmp() { renderCmp(); $('cmp').hidden = false; $('cmp').scrollTop = 0; document.body.classList.add('locked'); $('cmp-close').focus(); }
+function closeCmp(refocus = true) { $('cmp').hidden = true; document.body.classList.remove('locked'); if (refocus) $('v-cmp').focus(); }
+
+let toastT = 0;
+function toast(msg) { const t = $('toast'); t.textContent = msg; t.hidden = false; clearTimeout(toastT); toastT = setTimeout(() => { t.hidden = true; }, 3000); }
+function refreshMarks() { renderBooks(); renderConfirm(); renderThread(); renderThumbs(); renderReview(); }
+async function confirmSpread(code, i) {
+  const key = `${code}:${i}`;
+  if (OFFLINE || busy.has(key)) return;
+  if (!myName) { openGate(); return; }
+  if (okNotes(code, i).some(isMe)) return;
+  busy.add(key); renderConfirm(); renderThumbs();
+  try {
+    const j = await call({ action: 'add', name: myName, book: code, spread: i, st: 'ok', text: '', token });
+    if (j.id) { mine.add(String(j.id)); store.set('bt-mine', [...mine]); }
+    toast('확인 완료를 남겼어요.');
+  } catch (e) { toast('남기지 못했어요. 인터넷 연결을 확인하고 다시 눌러 주세요.'); }
+  finally { busy.delete(key); refreshMarks(); }
+}
+async function undoConfirm(code, i) {
+  const key = `${code}:${i}`;
+  const mineOk = okNotes(code, i).filter(n => mine.has(n.id));
+  if (OFFLINE || busy.has(key) || !mineOk.length) return;
+  busy.add(key); renderConfirm(); renderThumbs();
+  try {
+    for (const n of mineOk) { await call({ action: 'delete', id: n.id, token }); mine.delete(n.id); }
+    store.set('bt-mine', [...mine]);
+    toast('확인을 되돌렸어요.');
+  } catch (e) { toast('되돌리지 못했어요. 다시 눌러 주세요.'); }
+  finally { busy.delete(key); refreshMarks(); }
 }
 
 function renderThumbs() {
@@ -493,8 +663,21 @@ function renderThumbs() {
     if (st.fix) marks.append(el('i', { class: 'f', text: `수정 ${st.fix}` }));
     else if (st.ok) marks.append(el('i', { class: 'o', text: '✓' }));
     if (st.memo) marks.append(el('i', { class: 'n', text: `메모 ${st.memo}` }));
-    box.append(el('button', { class: 'thumb', 'data-i': String(i), 'aria-current': String(i === idx), 'aria-label': `${spreadTitle(s)}, ${s.pages.join('–')}쪽`, onclick: () => show(i, true) },
-      pic, marks, el('span', { class: 'cap' }, el('b', { text: s.date || s.pages.join('–') }), el('span', { text: s.date ? s.title : s.label }))));
+    const thumb = el('button', { class: 'thumb', 'data-i': String(i), 'aria-current': String(i === idx), 'aria-label': `${spreadTitle(s)}, ${s.pages.join('–')}쪽`, onclick: () => show(i, true) },
+      pic, marks, el('span', { class: 'cap' }, el('b', { text: s.date || s.pages.join('–') }), el('span', { text: s.date ? s.title : s.label })));
+    const oks = okNotes(book.code, i), names = uniq(oks.map(nameOf));
+    const tok = el('div', { class: 'tok' });
+    if (names.length) tok.append(el('span', { text: `✓ ${names.join(', ')}`, title: `확인: ${names.join(', ')}` }));
+    if (!OFFLINE && loaded) {
+      const my = oks.filter(isMe), canUndo = my.some(n => mine.has(n.id)), wait = busy.has(`${book.code}:${i}`);
+      const b = el('button', { type: 'button', 'aria-pressed': String(my.length > 0), text: wait ? '…' : my.length ? '✓ 확인함' : '확인',
+        'aria-label': my.length ? `${spreadTitle(s)} 확인 되돌리기` : `${spreadTitle(s)} 확인 완료`,
+        onclick: () => my.length ? undoConfirm(book.code, i) : confirmSpread(book.code, i) });
+      if (wait || (my.length && !canUndo)) b.disabled = true;
+      if (my.length && !canUndo) b.title = '다른 기기에서 남긴 확인이라 여기서는 되돌릴 수 없어요';
+      tok.append(b);
+    }
+    box.append(el('div', { class: 'tcell' }, thumb, tok));
   });
   if (!box.children.length) box.append(el('p', { class: 'empty', text: '이 조건에 맞는 펼침이 없어요.' }));
   const all = book.spreads.length;
@@ -537,7 +720,8 @@ function takeNotes(list) {
   notes = (Array.isArray(list) ? list : []).map(n => ({ id: String(n.id), at: Number(n.at), name: String(n.name || ''), book: String(n.book), spread: Number(n.spread), st: String(n.st), text: String(n.text || '') }))
     .filter(n => BOOKS.some(b => b.code === n.book) && Number.isInteger(n.spread) && ST[n.st]);
   loaded = true;
-  renderBooks(); renderThread(); renderThumbs(); renderReview();
+  renderBooks(); renderThread(); renderConfirm(); renderThumbs(); renderReview();
+  if (!$('cmp').hidden) renderCmp();
 }
 async function call(body) {
   const r = await fetch(SHEET_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(body) });
@@ -558,12 +742,11 @@ async function removeNote(n) {
 $('p-form').addEventListener('submit', async e => {
   e.preventDefault();
   if (OFFLINE) return;
-  const nm = $('p-name').value.trim();
-  if (!nm) { $('p-hint').textContent = '이름을 적어 주세요.'; $('p-name').focus(); return; }
-  store.set('bt-name', nm);
+  const nm = myName;
+  if (!nm) { openGate(); return; }
   const st = document.querySelector('input[name="st"]:checked').value;
   const text = $('p-text').value.trim();
-  if (st !== 'ok' && !text) { $('p-hint').textContent = '수정할 점이나 메모 내용을 적어 주세요.'; $('p-text').focus(); return; }
+  if (!text) { $('p-hint').textContent = '수정할 점이나 메모 내용을 적어 주세요.'; $('p-text').focus(); return; }
   $('p-send').disabled = true;
   try {
     const j = await call({ action: 'add', name: nm.slice(0, 40), book: book.code, spread: idx, st, text: text.slice(0, 2000), token });
@@ -573,29 +756,62 @@ $('p-form').addEventListener('submit', async e => {
     $('p-hint').textContent = '남기지 못했어요. 인터넷 연결을 확인하고 다시 눌러 주세요.';
   } finally { $('p-send').disabled = false; }
 });
-document.querySelectorAll('input[name="st"]').forEach(r => r.addEventListener('change', () => { $('p-hint').textContent = r.value === 'ok' ? '확인 완료는 내용 없이 남겨도 돼요' : '무엇을 고칠지 적어 주세요'; }));
+document.querySelectorAll('input[name="st"]').forEach(r => r.addEventListener('change', () => { $('p-hint').textContent = r.value === 'fix' ? '무엇을 고칠지 적어 주세요' : '남길 메모를 적어 주세요'; }));
 
 $('v-prev').onclick = () => show(idx - 1);
 $('v-next').onclick = () => show(idx + 1);
+$('v-cmp').onclick = openCmp;
+$('cmp-close').onclick = () => closeCmp();
+$('cmp-prev').onclick = () => show(idx - 1);
+$('cmp-next').onclick = () => show(idx + 1);
 $('v-jump').onchange = e => show(Number(e.target.value));
 $('v-img').onclick = () => $('v-scroll').classList.toggle('zoom');
 document.addEventListener('keydown', e => {
+  if (!$('gate').hidden) { if (e.key === 'Escape' && myName) closeGate(); return; }
   if (e.target.closest('textarea, input, select')) return;
+  if (!$('cmp').hidden) {
+    if (e.key === 'Escape') { closeCmp(); e.preventDefault(); }
+    else if (e.key === 'ArrowLeft') { show(idx - 1); e.preventDefault(); }
+    else if (e.key === 'ArrowRight') { show(idx + 1); e.preventDefault(); }
+    return;
+  }
+  if (e.key === 'Enter' && !e.isComposing && !e.repeat && !e.altKey && !e.ctrlKey && !e.metaKey && !e.shiftKey) {
+    if (e.target.closest('button, a, summary')) return; // 버튼에 포커스가 있으면 그 버튼이 눌리게 둔다
+    confirmAndNext(); e.preventDefault(); return;
+  }
   if (e.key === 'ArrowLeft') { show(idx - 1); e.preventDefault(); }
   if (e.key === 'ArrowRight') { show(idx + 1); e.preventDefault(); }
 });
 $('t-filters').addEventListener('click', e => { const b = e.target.closest('[data-f]'); if (!b) return; thumbFilter = b.dataset.f; document.querySelectorAll('#t-filters .chip').forEach(c => c.setAttribute('aria-pressed', String(c === b))); renderThumbs(); });
 $('r-filters').addEventListener('click', e => { const b = e.target.closest('[data-r]'); if (!b) return; revFilter = b.dataset.r; document.querySelectorAll('#r-filters .chip').forEach(c => c.setAttribute('aria-pressed', String(c === b))); renderReview(); });
 
+function renderMe() { $('me').hidden = VIEW_ONLY || !myName; $('me-name').textContent = myName; }
+function openGate() {
+  $('g-name').value = myName; $('g-err').textContent = ''; $('g-cancel').hidden = !myName;
+  $('gate').hidden = false; document.body.classList.add('gated');
+  setTimeout(() => $('g-name').focus(), 0);
+}
+function closeGate() { $('gate').hidden = true; document.body.classList.remove('gated'); }
+$('g-form').addEventListener('submit', e => {
+  e.preventDefault();
+  const nm = $('g-name').value.trim().replace(/\s+/g, ' ').slice(0, 40);
+  if (!nm) { $('g-err').textContent = '이름을 적어 주세요.'; $('g-name').focus(); return; }
+  myName = nm; store.set('bt-name', nm);
+  closeGate(); renderMe(); renderConfirm(); renderThumbs();
+});
+$('g-cancel').onclick = closeGate;
+$('me-change').onclick = openGate;
+
 setBook(book);
 
-$('p-name').value = store.get('bt-name', '');
-if ((window.claude && window.claude.use) || !SHEET_URL.startsWith('https://')) {
+if (VIEW_ONLY) {
   // claude.ai 안이거나 시트 주소가 아직 없으면: 열람만, 기록은 공개 주소에서
   $('p-form').hidden = true;
   OFFLINE = () => el('p', { class: 'signin' }, '검수 기록은 공개 검수 페이지에서 이름만 적고 남길 수 있어요: ', el('a', { href: PUBLIC_URL, target: '_blank', rel: 'noopener', text: '검수 페이지 열기' }));
-  renderThread(); renderReview();
+  renderThread(); renderConfirm(); renderThumbs(); renderReview();
 } else {
+  renderMe();
+  if (!myName) openGate();
   load();
   setInterval(() => { if (document.visibilityState === 'visible') load(); }, 30000);
   document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') load(); });
