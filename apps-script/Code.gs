@@ -1,9 +1,11 @@
-// 바이블트리 11–12월 인쇄 검수 기록 — 구글 시트 웹 앱
+// 바이블트리 11–12월 인쇄 검수 기록 — 구글 시트 웹 앱 (한국어판 + 베트남어판 + 베트남어 용어 검수표)
 // 시트 1행: id, at, name, book, spread, st, text, token
 // 배포: 확장 프로그램 > Apps Script에 붙여 넣고, 배포 > 새 배포 > 웹 앱
 //       (실행 계정: 나, 액세스 권한: 모든 사용자)
 
-const BOOKS = ['low', 'high', 'teen', 'young'];
+const BOOKS = ['low', 'high', 'teen', 'young', 'vlow', 'vhigh', 'vteen', 'vyoung', 'vterm'];
+// 책마다 spread 최대값(없으면 64). vterm = 용어 검수표 순번
+const MAX_SPREAD = { vterm: 999 };
 const STATES = ['ok', 'fix', 'memo'];
 
 function sheet_() {
@@ -44,7 +46,7 @@ function doPost(e) {
     if (d.action === 'add') {
       const name = String(d.name || '').trim();
       const spread = Number(d.spread);
-      if (!name || BOOKS.indexOf(d.book) < 0 || STATES.indexOf(d.st) < 0 || !(spread >= 0 && spread <= 64 && spread % 1 === 0)) {
+      if (!name || BOOKS.indexOf(d.book) < 0 || STATES.indexOf(d.st) < 0 || !(spread >= 0 && spread <= (MAX_SPREAD[d.book] || 64) && spread % 1 === 0)) {
         return json_({ ok: false, error: 'invalid' });
       }
       const id = Utilities.getUuid().slice(0, 8) + Date.now().toString(36);
